@@ -24,6 +24,8 @@
         <entry key="..\:/~project/MusicApp/app/src/main/res/layout/fragment_home.xml" value="0.25416666666666665" />
         <entry key="..\:/~project/MusicApp/app/src/main/res/layout/fragment_home_artist_item.xml" value="0.25416666666666665" />
         <entry key="..\:/~project/MusicApp/app/src/main/res/layout/fragment_home_category_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/~project/MusicApp/app/src/main/res/layout/fragment_home_composer_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/~project/MusicApp/app/src/main/res/layout/fragment_home_country_item.xml" value="0.25416666666666665" />
         <entry key="..\:/~project/MusicApp/app/src/main/res/layout/fragment_home_genre_item.xml" value="0.25416666666666665" />
         <entry key="..\:/~project/MusicApp/app/src/main/res/layout/fragment_home_song_item.xml" value="0.25416666666666665" />
         <entry key="..\:/~project/MusicApp/app/src/main/res/layout/item_cover.xml" value="0.24010416666666667" />
@@ -33,6 +35,8 @@
         <entry key="..\:/~project/MusicApp/app/src/main/res/layout/test.xml" value="0.17391304347826086" />
         <entry key="..\:/~project/MusicApp/app/src/main/res/layout/toolbar_home.xml" value="0.25416666666666665" />
         <entry key="..\:/~project/MusicApp/app/src/main/res/layout/toolbar_song.xml" value="0.25416666666666665" />
+        <entry key="..\:/~project/MusicApp/app/src/main/res/menu/home_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/~project/MusicApp/app/src/main/res/menu/navigation.xml" value="0.25416666666666665" />
       </map>
     </option>
   </component>

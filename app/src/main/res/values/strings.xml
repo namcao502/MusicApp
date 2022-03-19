@@ -6,4 +6,8 @@
     <string name="description">Description</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_home">Trang chủ</string>
+    <string name="title_all_music">Tất cả nhạc</string>
+    <string name="title_search">Tìm kiếm</string>
+    <string name="title_user">Người dùng</string>
 </resources>

@@ -195,6 +195,5 @@ public class SimplePlayerActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //textViewTitle.setText(songModel.getTitle());
     }
 }
