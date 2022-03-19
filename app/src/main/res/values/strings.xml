@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MusicApp</string>
+    <string name="first_slide">Slide 1</string>
+    <string name="second_slide">Slide 2</string>
+    <string name="third_slide">Slide 3</string>
+    <string name="description">Description</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
