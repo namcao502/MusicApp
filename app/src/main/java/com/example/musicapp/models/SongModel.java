@@ -8,35 +8,22 @@ public class SongModel implements Serializable {
     private String title;
     private String url;
     private String img_url;
-    List<ArtistModel> artistModelList;
-
-    public SongModel(String title, String url, String img_url, List<ArtistModel> artistModelList) {
-        this.title = title;
-        this.url = url;
-        this.img_url = img_url;
-        this.artistModelList = artistModelList;
-    }
+    private List<ArtistModel> Artist;
 
     public SongModel() {
     }
 
-
-    public List<ArtistModel> getArtistModelList() {
-        return artistModelList;
+    public SongModel(String title, String url, String img_url, List<ArtistModel> Artist) {
+        this.title = title;
+        this.url = url;
+        this.img_url = img_url;
+        this.Artist = Artist;
     }
 
-    public void setArtistModelList(List<ArtistModel> artistModelList) {
-        this.artistModelList = artistModelList;
-    }
-
-    @Override
-    public String toString() {
-        return "SongModel{" +
-                "title='" + title + '\'' +
-                ", url='" + url + '\'' +
-                ", img_url='" + img_url + '\'' +
-                ", artistModelList=" + artistModelList +
-                '}';
+    public SongModel(String title, String url, String img_url) {
+        this.title = title;
+        this.url = url;
+        this.img_url = img_url;
     }
 
     public String getTitle() {
@@ -62,4 +49,23 @@ public class SongModel implements Serializable {
     public void setImg_url(String img_url) {
         this.img_url = img_url;
     }
+
+    public List<ArtistModel> getArtist() {
+        return Artist;
+    }
+
+    public void setArtist(List<ArtistModel> artist) {
+        Artist = artist;
+    }
+
+    @Override
+    public String toString() {
+        return "SongModel{" +
+                "title='" + title + '\'' +
+                ", url='" + url + '\'' +
+                ", img_url='" + img_url + '\'' +
+                ", artistModelList=" + Artist +
+                '}';
+    }
+
 }

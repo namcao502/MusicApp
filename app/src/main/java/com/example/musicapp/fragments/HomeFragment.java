@@ -41,7 +41,7 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    RecyclerView recyclerViewGenre, recyclerViewArtist, recyclerViewSong, recyclerViewComposer, recyclerViewCountry;
+    RecyclerView recyclerViewGenre, recyclerViewArtist, recyclerViewComposer, recyclerViewCountry;
     FirebaseFirestore db;
     ProgressDialog progressDialog;
     LinearLayout linearLayoutHome;

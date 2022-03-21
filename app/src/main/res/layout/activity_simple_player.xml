@@ -12,10 +12,10 @@
         android:layout_height="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
+        android:src="@drawable/icons8_audio_64"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/seekBarVolume"
-        android:src="@drawable/icons8_audio_64" />
+        app:layout_constraintStart_toEndOf="@+id/seekBarVolume" />
 
     <ImageView
         android:id="@+id/imageViewLoop"
@@ -28,6 +28,8 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <SeekBar
+        android:progressTint="@color/Primary"
+        android:thumbTint="@color/PrimaryDark"
         android:id="@+id/seekBarVolume"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -63,6 +65,8 @@
         app:layout_constraintStart_toEndOf="@+id/imageViewPrevious" />
 
     <SeekBar
+        android:progressTint="@color/Primary"
+        android:thumbTint="@color/PrimaryDark"
         android:id="@+id/seekBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -134,10 +138,10 @@
         android:layout_height="32dp"
         android:layout_marginStart="32dp"
         android:layout_marginBottom="32dp"
+        android:src="@drawable/icons8_mute_64"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/seekBarVolume"
-        app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/icons8_mute_64" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textViewEnd"

@@ -13,44 +13,44 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.denzcoskun.imageslider.ImageSlider
-            android:id="@+id/image_slider"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginBottom="20dp"
-            app:iss_auto_cycle="true"
-            app:iss_delay="0"
-            app:iss_period="1000" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp">
+            <com.denzcoskun.imageslider.ImageSlider
+                android:id="@+id/image_slider"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_marginBottom="20dp"
+                app:iss_auto_cycle="true"
+                app:iss_delay="0"
+                app:iss_period="1000" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
 
-                <TextView
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Thể loại"
+                        android:textAllCaps="true"
+                        android:textSize="21sp"
+                        android:textStyle="bold" />
+
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView_genre"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Thể loại"
-                    android:textAllCaps="true"
-                    android:textSize="21sp"
-                    android:textStyle="bold" />
-
+                    android:padding="10dp" />
 
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_genre"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp" />
-
-        </LinearLayout>
 
             <LinearLayout
                 android:padding="10dp"
@@ -81,60 +81,60 @@
                     android:padding="10dp" />
             </LinearLayout>
 
-        <LinearLayout
-            android:padding="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nhạc sĩ"
-                    android:textAllCaps="true"
-                    android:textSize="21sp"
-                    android:textStyle="bold" />
-
-            </RelativeLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
+            <LinearLayout
                 android:padding="10dp"
-                android:id="@+id/recyclerView_composer"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-        </LinearLayout>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-        <LinearLayout
-            android:padding="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/popular_products"
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Quốc gia"
-                    android:textAllCaps="true"
-                    android:textSize="21sp"
-                    android:textStyle="bold" />
+                    android:layout_height="wrap_content">
 
-            </RelativeLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nhạc sĩ"
+                        android:textAllCaps="true"
+                        android:textSize="21sp"
+                        android:textStyle="bold" />
 
-            <androidx.recyclerview.widget.RecyclerView
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:padding="10dp"
+                    android:id="@+id/recyclerView_composer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:padding="10dp"
-                android:id="@+id/recyclerView_country"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-        </LinearLayout>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/popular_products"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quốc gia"
+                        android:textAllCaps="true"
+                        android:textSize="21sp"
+                        android:textStyle="bold" />
+
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:padding="10dp"
+                    android:id="@+id/recyclerView_country"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
 
     </LinearLayout>
 

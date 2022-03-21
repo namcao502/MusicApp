@@ -3,7 +3,7 @@ package com.example.musicapp.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,56 +20,61 @@ import com.example.musicapp.Variables;
 import com.example.musicapp.activities.SimplePlayerActivity;
 import com.example.musicapp.models.SongModel;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     Context context;
-    List<SongModel> list;
+    List<SongModel> songModelList;
 
-    public SongAdapter(Context context, List<SongModel> list) {
+    public SongAdapter(Context context, List<SongModel> songModelList) {
         this.context = context;
-        this.list = list;
+        this.songModelList = songModelList;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_home_song_item, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_all_song_song_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        Glide.with(context).load(list.get(position).getImg_url()).into(holder.imageView);
-        holder.textViewTitle.setText(list.get(position).getTitle());
-        int artistListLength = list.get(position).getArtistModelList().size();
+
+        Glide.with(context).load(songModelList.get(position).getImg_url()).into(holder.imageView);
+
+        holder.textViewTitle.setText(songModelList.get(position).getTitle());
+
+        int artistListLength = songModelList.get(position).getArtist().size();
+
         String artistText = "";
+
         for (int i=0; i<artistListLength; i++){
             if (i == artistListLength - 1){
-                artistText += list.get(position).getArtistModelList().get(i).getName();
+                artistText += songModelList.get(position).getArtist().get(i).getName();
             }
             else {
-                artistText += list.get(position).getArtistModelList().get(i).getName() + ", ";
+                artistText += songModelList.get(position).getArtist().get(i).getName() + ", ";
             }
         }
-        holder.textViewArtist.setText(artistText);
+        if (artistText.isEmpty())
+            holder.textViewArtist.setText("Không có nghệ sĩ");
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, SimplePlayerActivity.class);
-                intent.putExtra(Variables.SONG_MODEL_OBJECT, list.get(position));
-                context.startActivity(intent);
-            }
+        else
+            holder.textViewArtist.setText(artistText);
+
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(context, SimplePlayerActivity.class);
+            intent.putExtra(Variables.LIST_SONG_MODEL_OBJECT, (Serializable) songModelList);
+            intent.putExtra(Variables.POSITION, position);
+            context.startActivity(intent);
         });
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return songModelList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -78,7 +83,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageViewSongItem);
-            textViewTitle = itemView.findViewById(R.id.textViewTitlePlayer);
+            textViewTitle = itemView.findViewById(R.id.textViewTitleSongItem);
             textViewArtist = itemView.findViewById(R.id.textViewArtistSongItem);
         }
     }

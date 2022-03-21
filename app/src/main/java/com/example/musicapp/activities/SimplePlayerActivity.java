@@ -21,14 +21,16 @@ import com.example.musicapp.models.SongModel;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class SimplePlayerActivity extends AppCompatActivity {
 
     TextView textViewStart, textViewEnd, textViewTitle, textViewArtist;
-    ImageView imageView;
+    ImageView imageView, imageViewPlay, imageViewPrevious, imageViewNext;
     SeekBar seekBar, seekBarVolume;
-    ImageView imageViewPlay;
-    SongModel songModel;
+    //SongModel songModel;
+    List<SongModel> songModelList;
+    int position = 0;
     MediaPlayer mediaPlayer;
     AudioManager audioManager = null;
 
@@ -56,6 +58,61 @@ public class SimplePlayerActivity extends AppCompatActivity {
     }
 
     private void Listener() {
+        imageViewNext.setOnClickListener(view -> {
+            position += 1;
+            int maxLength = songModelList.size();
+            if (position > maxLength - 1){
+                position = 0;
+            }
+            if (mediaPlayer.isPlaying()){
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                try {
+                    CreateMediaPlayer();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer.start();
+                imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+            }
+            else {
+                try {
+                    CreateMediaPlayer();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            SetTime();
+            UpdateProgress();
+        });
+
+        imageViewPrevious.setOnClickListener(view -> {
+            position -= 1;
+            int maxLength = songModelList.size();
+            if (position < 0){
+                position = maxLength - 1;
+            }
+            if (mediaPlayer.isPlaying()){
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                try {
+                    CreateMediaPlayer();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer.start();
+                imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+            }
+            else {
+                try {
+                    CreateMediaPlayer();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            SetTime();
+            UpdateProgress();
+        });
         imageViewPlay.setOnClickListener(view -> {
             if (mediaPlayer.isPlaying()){
                 mediaPlayer.pause();
@@ -157,43 +214,57 @@ public class SimplePlayerActivity extends AppCompatActivity {
         textViewTitle = findViewById(R.id.textViewTitlePlayer);
         seekBar = findViewById(R.id.seekBar);
         seekBarVolume = findViewById(R.id.seekBarVolume);
+
         imageViewPlay = findViewById(R.id.imageViewPlay);
         imageView = findViewById(R.id.imageViewPlayer);
+        imageViewNext = findViewById(R.id.imageViewNext);
+        imageViewPrevious = findViewById(R.id.imageViewPrevious);
         textViewArtist = findViewById(R.id.textViewArtistPlayer);
 
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-        mediaPlayer.setOnCompletionListener(mediaPlayer -> {
-            mediaPlayer.start();
-            imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
-            SetTime();
-            UpdateProgress();
-        });
-
         Intent intent = getIntent();
-        songModel = (SongModel) intent.getSerializableExtra(Variables.SONG_MODEL_OBJECT);
-        Glide.with(getApplicationContext()).load(songModel.getImg_url()).into(imageView);
-        textViewTitle.setText(songModel.getTitle());
-        int artistListLength = songModel.getArtistModelList().size();
-        String artistText = "";
-        for (int i=0; i<artistListLength; i++){
-            if (i == artistListLength - 1){
-                artistText += songModel.getArtistModelList().get(i).getName();
-            }
-            else {
-                artistText += songModel.getArtistModelList().get(i).getName() + ", ";
-            }
-        }
-        textViewArtist.setText(artistText);
+//        songModel = (SongModel) intent.getSerializableExtra(Variables.SONG_MODEL_OBJECT);
+//        Glide.with(getApplicationContext()).load(songModel.getImg_url()).into(imageView);
+//        textViewTitle.setText(songModel.getTitle());
+//        int artistListLength = songModel.getArtist().size();
+//        String artistText = "";
+//        for (int i=0; i<artistListLength; i++){
+//            if (i == artistListLength - 1){
+//                artistText += songModel.getArtist().get(i).getName();
+//            }
+//            else {
+//                artistText += songModel.getArtist().get(i).getName() + ", ";
+//            }
+//        }
+//        textViewArtist.setText(artistText);
+
+        songModelList = (List<SongModel>) intent.getSerializableExtra(Variables.LIST_SONG_MODEL_OBJECT);
+        position = intent.getIntExtra(Variables.POSITION, 0);
     }
 
     private void CreateMediaPlayer() throws IOException {
-        mediaPlayer.setDataSource(songModel.getUrl());
+        Glide.with(getApplicationContext()).load(songModelList.get(position).getImg_url()).into(imageView);
+        textViewTitle.setText(songModelList.get(position).getTitle());
+        int artistListLength = songModelList.get(position).getArtist().size();
+        String artistText = "";
+        for (int i=0; i<artistListLength; i++){
+            if (i == artistListLength - 1){
+                artistText += songModelList.get(position).getArtist().get(i).getName();
+            }
+            else {
+                artistText += songModelList.get(position).getArtist().get(i).getName() + ", ";
+            }
+        }
+        textViewArtist.setText(artistText);
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setDataSource(songModelList.get(position).getUrl());
         try {
             mediaPlayer.prepare();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mediaPlayer.start();
     }
 }

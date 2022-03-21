@@ -1,7 +1,9 @@
 package com.example.musicapp.activities;
 
 import android.os.Bundle;
+import android.view.View;
 
+import com.example.musicapp.fragments.AllSongFragment;
 import com.example.musicapp.fragments.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import com.example.musicapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,15 +24,15 @@ public class MainActivity extends AppCompatActivity {
 
         loadFragment(new HomeFragment());
 
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnItemSelectedListener(item -> {
-            Fragment fragment;
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
+
+        bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    fragment = new HomeFragment();
-                    loadFragment(fragment);
+                    loadFragment(new HomeFragment());
                     return true;
                 case R.id.navigation_all_music:
+                    loadFragment(new AllSongFragment());
                     return true;
                 case R.id.navigation_search:
                     return true;

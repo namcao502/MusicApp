@@ -11,6 +11,14 @@ public class ArtistModel implements Serializable {
         this.img_url = img_url;
     }
 
+    @Override
+    public String toString() {
+        return "ArtistModel{" +
+                "name='" + name + '\'' +
+                ", img_url='" + img_url + '\'' +
+                '}';
+    }
+
     public ArtistModel() {
     }
 
