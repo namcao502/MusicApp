@@ -48,8 +48,8 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> 
         TextView textView;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageViewCategoryItem);
-            textView = itemView.findViewById(R.id.textViewCategoryItem);
+            imageView = itemView.findViewById(R.id.imageViewGenreItem);
+            textView = itemView.findViewById(R.id.textViewGenreItem);
         }
     }
 }

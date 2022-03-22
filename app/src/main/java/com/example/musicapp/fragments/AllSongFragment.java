@@ -3,6 +3,7 @@ package com.example.musicapp.fragments;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,12 +20,17 @@ import com.example.musicapp.models.ArtistModel;
 
 import com.example.musicapp.models.SongModel;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AllSongFragment extends Fragment {
 
@@ -37,12 +43,12 @@ public class AllSongFragment extends Fragment {
 
     FirebaseFirestore db;
 
-    // list id song
-    private int indexID = 0;
-    private ArrayList<String> listIdSong = new ArrayList<>();
-    private ArrayList<String> listUrlSong = new ArrayList<>();
-    private ArrayList<String> listTitleSong = new ArrayList<>();
-    private ArrayList<String> listImgUrlSong = new ArrayList<>();
+//    // list id song
+//    private int indexID = 0;
+//    private ArrayList<String> listIdSong = new ArrayList<>();
+//    private ArrayList<String> listUrlSong = new ArrayList<>();
+//    private ArrayList<String> listTitleSong = new ArrayList<>();
+//    private ArrayList<String> listImgUrlSong = new ArrayList<>();
 
     public AllSongFragment() {
         // Required empty public constructor
@@ -51,6 +57,7 @@ public class AllSongFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_all_song, container, false);
 
@@ -76,59 +83,71 @@ public class AllSongFragment extends Fragment {
         db.collection("Song").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot doc : task.getResult()) {
-                    //get a song
                     SongModel songModel = doc.toObject(SongModel.class);
-                    //songModelList.add(songModel);
-                    //get id that song
-                    String docId = doc.getId();
-//                    Log.d("TAG1", "ID: " + docId);
-//                    Log.d("TAG1", "song model: " + songModel.toString());
-
-                    listIdSong.add(docId);
-                    listUrlSong.add(songModel.getUrl());
-                    listTitleSong.add(songModel.getTitle());
-                    listImgUrlSong.add(songModel.getImg_url());
+                    songModelList.add(songModel);
                 }
-//                Log.d("TAG1", "song model list size: " + songModelList.size());
-                //get artist data
-                getArtistFromIdSong(0);
+                songAdapter.notifyDataSetChanged();
                 linearLayoutAllSong.setVisibility(View.VISIBLE);
                 progressDialog.dismiss();
-//                Log.i("TAG1", "finish: ");
             }
         });
 
+//        db.collection("Song").get().addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                for (QueryDocumentSnapshot doc : task.getResult()) {
+//                    //get a song
+//                    SongModel songModel = doc.toObject(SongModel.class);
+//                    //songModelList.add(songModel);
+//                    //get id that song
+//                    String docId = doc.getId();
+////                    Log.d("TAG1", "ID: " + docId);
+////                    Log.d("TAG1", "song model: " + songModel.toString());
+//
+//                    listIdSong.add(docId);
+//                    listUrlSong.add(songModel.getUrl());
+//                    listTitleSong.add(songModel.getTitle());
+//                    listImgUrlSong.add(songModel.getImg_url());
+//                }
+////                Log.d("TAG1", "song model list size: " + songModelList.size());
+//                //get artist data
+//                getArtistFromIdSong(0);
+//                linearLayoutAllSong.setVisibility(View.VISIBLE);
+//                progressDialog.dismiss();
+////                Log.i("TAG1", "finish: ");
+//            }
+//        });
+//
         return view;
     }
-
-    private void getArtistFromIdSong(int index) {
-        indexID = index;
-//        Log.d("TAG1", "id index :" + index);
-        String idSong = listIdSong.get(index);
-        String urlSong = listUrlSong.get(index);
-        String titleSong = listTitleSong.get(index);
-        String imgUrlSong = listImgUrlSong.get(index);
-//        Log.d("TAG1", "getArtistFromIdSong: " + idSong);
-        db.collection("Song").document(idSong).collection("Artist").get().addOnCompleteListener(task -> {
-//            Log.d("TAG1", ""+task.isSuccessful());
-            if (task.isSuccessful()) {
-                List<ArtistModel> artistModelListTemp = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    ArtistModel artistModel = doc.toObject(ArtistModel.class);
-                    artistModelListTemp.add(artistModel);
-//                    Log.d("TAG1", " artist :" + artistModel);
-                }
-//                Log.d("TAG1", " artist list size :" + artistModelListTemp.size());
-                SongModel songModelTemp = new SongModel(titleSong, urlSong, imgUrlSong);
-                //SongModel songModelTemp = new SongModel();
-                songModelTemp.setArtist(artistModelListTemp);
-                songModelList.add(songModelTemp);
-                //songModelList.get(index).setArtist(artistModelListTemp);
-                songAdapter.notifyDataSetChanged();
-                if (indexID < listIdSong.size() - 1) {
-                    getArtistFromIdSong(indexID + 1);
-                }
-            }
-        });
-    }
+//
+//    private void getArtistFromIdSong(int index) {
+//        indexID = index;
+////        Log.d("TAG1", "id index :" + index);
+//        String idSong = listIdSong.get(index);
+//        String urlSong = listUrlSong.get(index);
+//        String titleSong = listTitleSong.get(index);
+//        String imgUrlSong = listImgUrlSong.get(index);
+////        Log.d("TAG1", "getArtistFromIdSong: " + idSong);
+//        db.collection("Song").document(idSong).collection("Artist").get().addOnCompleteListener(task -> {
+////            Log.d("TAG1", ""+task.isSuccessful());
+//            if (task.isSuccessful()) {
+//                List<ArtistModel> artistModelListTemp = new ArrayList<>();
+//                for (QueryDocumentSnapshot doc : task.getResult()) {
+//                    ArtistModel artistModel = doc.toObject(ArtistModel.class);
+//                    artistModelListTemp.add(artistModel);
+////                    Log.d("TAG1", " artist :" + artistModel);
+//                }
+////                Log.d("TAG1", " artist list size :" + artistModelListTemp.size());
+//                SongModel songModelTemp = new SongModel(titleSong, urlSong, imgUrlSong);
+//                //SongModel songModelTemp = new SongModel();
+//                songModelTemp.setArtist(artistModelListTemp);
+//                songModelList.add(songModelTemp);
+//                //songModelList.get(index).setArtist(artistModelListTemp);
+//                songAdapter.notifyDataSetChanged();
+//                if (indexID < listIdSong.size() - 1) {
+//                    getArtistFromIdSong(indexID + 1);
+//                }
+//            }
+//        });
+//     }
 }

@@ -2,6 +2,7 @@ package com.example.musicapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -30,14 +31,14 @@ public class SimplePlayerActivity extends AppCompatActivity {
     SeekBar seekBar, seekBarVolume;
     //SongModel songModel;
     List<SongModel> songModelList;
-    int position = 0;
+    int songPosition = 0;
     MediaPlayer mediaPlayer;
     AudioManager audioManager = null;
 
     @Override
     protected void onPause() {
         super.onPause();
-        mediaPlayer.stop();
+        mediaPlayer.pause();
     }
 
     @Override
@@ -46,23 +47,24 @@ public class SimplePlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_simple_player);
         getSupportActionBar().hide();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
         ViewBinding();
-        SetTime();
         try {
             CreateMediaPlayer();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        SetTime();
+        UpdateProgress();
         Listener();
-
     }
 
     private void Listener() {
         imageViewNext.setOnClickListener(view -> {
-            position += 1;
+            songPosition += 1;
             int maxLength = songModelList.size();
-            if (position > maxLength - 1){
-                position = 0;
+            if (songPosition > maxLength - 1){
+                songPosition = 0;
             }
             if (mediaPlayer.isPlaying()){
                 mediaPlayer.stop();
@@ -87,10 +89,10 @@ public class SimplePlayerActivity extends AppCompatActivity {
         });
 
         imageViewPrevious.setOnClickListener(view -> {
-            position -= 1;
+            songPosition -= 1;
             int maxLength = songModelList.size();
-            if (position < 0){
-                position = maxLength - 1;
+            if (songPosition < 0){
+                songPosition = maxLength - 1;
             }
             if (mediaPlayer.isPlaying()){
                 mediaPlayer.stop();
@@ -164,6 +166,35 @@ public class SimplePlayerActivity extends AppCompatActivity {
         catch (Exception e) {
             e.printStackTrace();
         }
+
+        mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+            mediaPlayer = new MediaPlayer();
+            songPosition += 1;
+            int maxLength = songModelList.size();
+            if (songPosition > maxLength - 1){
+                songPosition = 0;
+            }
+            if (mediaPlayer.isPlaying()){
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                try {
+                    CreateMediaPlayer();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer.start();
+                imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+            }
+            else {
+                try {
+                    CreateMediaPlayer();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            SetTime();
+            UpdateProgress();
+        });
     }
 
     private void UpdateProgress(){
@@ -209,6 +240,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
     }
 
     private void ViewBinding(){
+
         textViewStart = findViewById(R.id.textViewStart);
         textViewEnd = findViewById(R.id.textViewEnd);
         textViewTitle = findViewById(R.id.textViewTitlePlayer);
@@ -224,7 +256,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-        Intent intent = getIntent();
+
 //        songModel = (SongModel) intent.getSerializableExtra(Variables.SONG_MODEL_OBJECT);
 //        Glide.with(getApplicationContext()).load(songModel.getImg_url()).into(imageView);
 //        textViewTitle.setText(songModel.getTitle());
@@ -239,32 +271,37 @@ public class SimplePlayerActivity extends AppCompatActivity {
 //            }
 //        }
 //        textViewArtist.setText(artistText);
-
+        Intent intent = getIntent();
         songModelList = (List<SongModel>) intent.getSerializableExtra(Variables.LIST_SONG_MODEL_OBJECT);
-        position = intent.getIntExtra(Variables.POSITION, 0);
+        songPosition = intent.getIntExtra(Variables.POSITION, 0);
+
     }
 
     private void CreateMediaPlayer() throws IOException {
-        Glide.with(getApplicationContext()).load(songModelList.get(position).getImg_url()).into(imageView);
-        textViewTitle.setText(songModelList.get(position).getTitle());
-        int artistListLength = songModelList.get(position).getArtist().size();
+
+        Glide.with(getApplicationContext()).load(songModelList.get(songPosition).getImg_url()).into(imageView);
+        textViewTitle.setText(songModelList.get(songPosition).getTitle());
+        int artistListLength = songModelList.get(songPosition).getArtist().size();
         String artistText = "";
         for (int i=0; i<artistListLength; i++){
             if (i == artistListLength - 1){
-                artistText += songModelList.get(position).getArtist().get(i).getName();
+                artistText += songModelList.get(songPosition).getArtist().get(i);
             }
             else {
-                artistText += songModelList.get(position).getArtist().get(i).getName() + ", ";
+                artistText += songModelList.get(songPosition).getArtist().get(i) + ", ";
             }
         }
         textViewArtist.setText(artistText);
+
         mediaPlayer = new MediaPlayer();
-        mediaPlayer.setDataSource(songModelList.get(position).getUrl());
+        mediaPlayer.setDataSource(songModelList.get(songPosition).getUrl());
         try {
             mediaPlayer.prepare();
         } catch (IOException e) {
             e.printStackTrace();
         }
         mediaPlayer.start();
+        imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+
     }
 }

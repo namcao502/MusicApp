@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -21,14 +20,15 @@ import com.example.musicapp.activities.SimplePlayerActivity;
 import com.example.musicapp.models.SongModel;
 
 import java.io.Serializable;
+import java.security.AccessControlContext;
 import java.util.List;
 
-public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
+public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ViewHolder> {
 
     Context context;
     List<SongModel> songModelList;
 
-    public SongAdapter(Context context, List<SongModel> songModelList) {
+    public ListSongAdapter(Context context, List<SongModel> songModelList) {
         this.context = context;
         this.songModelList = songModelList;
     }
@@ -36,7 +36,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_all_song_song_item, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_list_song_item, parent, false));
     }
 
     @Override
@@ -47,6 +47,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         holder.textViewTitle.setText(songModelList.get(position).getTitle());
 
         int artistListLength = songModelList.get(position).getArtist().size();
+
+//        Log.i("TAG1", "onBindViewHolder: " + artistListLength + "   ----   " + songModelList.get(position).getTitle());
 
         String artistText = "";
 
@@ -67,8 +69,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(context, SimplePlayerActivity.class);
             intent.putExtra(Variables.LIST_SONG_MODEL_OBJECT, (Serializable) songModelList);
-//            Log.i("TAG1", "song adapter: ok" + songModelList);
             intent.putExtra(Variables.POSITION, position);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         });
     }
@@ -83,9 +85,9 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         TextView textViewTitle, textViewArtist;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageViewSongItem);
-            textViewTitle = itemView.findViewById(R.id.textViewTitleSongItem);
-            textViewArtist = itemView.findViewById(R.id.textViewArtistSongItem);
+            imageView = itemView.findViewById(R.id.imageViewListSongItem);
+            textViewTitle = itemView.findViewById(R.id.textViewTitleListSongItem);
+            textViewArtist = itemView.findViewById(R.id.textViewArtistListSongItem);
         }
     }
 }

@@ -8,22 +8,16 @@ public class SongModel implements Serializable {
     private String title;
     private String url;
     private String img_url;
-    private List<ArtistModel> Artist;
+    private List<String> artist;
 
     public SongModel() {
     }
 
-    public SongModel(String title, String url, String img_url, List<ArtistModel> Artist) {
+    public SongModel(String title, String url, String img_url, List<String> artist) {
         this.title = title;
         this.url = url;
         this.img_url = img_url;
-        this.Artist = Artist;
-    }
-
-    public SongModel(String title, String url, String img_url) {
-        this.title = title;
-        this.url = url;
-        this.img_url = img_url;
+        artist = artist;
     }
 
     public String getTitle() {
@@ -50,12 +44,12 @@ public class SongModel implements Serializable {
         this.img_url = img_url;
     }
 
-    public List<ArtistModel> getArtist() {
-        return Artist;
+    public List<String> getArtist() {
+        return artist;
     }
 
-    public void setArtist(List<ArtistModel> artist) {
-        Artist = artist;
+    public void setArtist(List<String> artist) {
+        this.artist = artist;
     }
 
     @Override
@@ -64,8 +58,7 @@ public class SongModel implements Serializable {
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
                 ", img_url='" + img_url + '\'' +
-                ", artistModelList=" + Artist +
+                ", Artist=" + artist +
                 '}';
     }
-
 }
