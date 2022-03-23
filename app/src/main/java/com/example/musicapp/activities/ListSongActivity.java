@@ -75,7 +75,7 @@ public class ListSongActivity extends AppCompatActivity {
         songTitleList = new ArrayList<>();
         songTitleList = (List<String>) intent.getSerializableExtra(Variables.PLAYLIST_OBJECT);
 
-        listSongAdapter = new ListSongAdapter(getApplicationContext(), songModelList);
+        listSongAdapter = new ListSongAdapter(getApplicationContext(), songModelList, intent);
         recyclerViewListSong.setAdapter(listSongAdapter);
 
         //get data from song collection

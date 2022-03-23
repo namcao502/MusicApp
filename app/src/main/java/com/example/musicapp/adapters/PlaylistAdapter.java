@@ -1,5 +1,7 @@
 package com.example.musicapp.adapters;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
@@ -7,8 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentTransaction;
@@ -22,6 +27,9 @@ import com.example.musicapp.fragments.AllSongFragment;
 import com.example.musicapp.fragments.HomeFragment;
 import com.example.musicapp.models.PlaylistModel;
 import com.example.musicapp.models.SongModel;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
 import java.util.List;
@@ -43,7 +51,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.textView.setText(list.get(position).getTitle());
 
         holder.itemView.setOnClickListener(view -> {
@@ -58,6 +66,60 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+
+                Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.activity_list_song_delete_change_name_song_dialog);
+
+                Button buttonDelete, buttonChangeName;
+                EditText editTextPlaylistName;
+
+                buttonDelete = dialog.findViewById(R.id.buttonDeletePlaylist);
+                buttonChangeName = dialog.findViewById(R.id.buttonChangePlaylistNameDialog);
+                editTextPlaylistName = dialog.findViewById(R.id.editTextPlaylistName);
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+
+                editTextPlaylistName.setText(list.get(position).getTitle());
+
+                buttonChangeName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        String playlistName = editTextPlaylistName.getText().toString();
+
+                        if (!(playlistName.isEmpty())){
+                            db.collection("Playlist").document(auth.getUid()).collection("User")
+                                    .document(list.get(position).getID())
+                                    .update("title", playlistName).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    Toast.makeText(context, "Đổi tên thành công", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                }
+                            });
+                        }
+                        else {
+                            Toast.makeText(context, "Vui lòng nhập tên mới", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+                buttonDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        db.collection("Playlist").document(auth.getUid()).collection("User")
+                                .document(list.get(position).getID()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(context, "Xoá thành công", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        });
+                    }
+                });
+                dialog.show();
                 return false;
             }
         });

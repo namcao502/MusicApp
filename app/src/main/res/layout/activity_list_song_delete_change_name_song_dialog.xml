@@ -1,0 +1,42 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:padding="10dp"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Button
+        android:padding="10dp"
+        android:id="@+id/buttonChangePlaylistNameDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="Đổi tên"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/editTextPlaylistName"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:padding="10dp"
+        android:id="@+id/editTextPlaylistName"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="Nhập tên mới"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toStartOf="@+id/buttonChangePlaylistNameDialog"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:padding="10dp"
+        android:id="@+id/buttonDeletePlaylist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Xoá danh sách"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextPlaylistName" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
