@@ -5,24 +5,33 @@ import java.util.List;
 
 public class PlaylistModel implements Serializable {
 
-    String name;
+    String title;
     List<String> song;
+    String ID;
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
 
     public PlaylistModel() {
 
     }
 
-    public PlaylistModel(String name, List<String> song) {
-        this.name = name;
+    public PlaylistModel(String title, List<String> song) {
+        this.title = title;
         this.song = song;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public List<String> getSong() {
@@ -36,8 +45,9 @@ public class PlaylistModel implements Serializable {
     @Override
     public String toString() {
         return "PlaylistModel{" +
-                "name='" + name + '\'' +
+                "title='" + title + '\'' +
                 ", song=" + song +
+                ", ID='" + ID + '\'' +
                 '}';
     }
 }

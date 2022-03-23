@@ -39,7 +39,7 @@ public class FirstTimeActivity extends AppCompatActivity {
         firstTimeSliderAdapter = new FirstTimeSliderAdapter(this);
         viewPager.setAdapter(firstTimeSliderAdapter);
 
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
     }
 
     private void listener() {

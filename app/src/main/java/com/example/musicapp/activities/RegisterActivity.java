@@ -25,7 +25,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         viewBinding();
         listener();
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
     }
     private void viewBinding(){
 

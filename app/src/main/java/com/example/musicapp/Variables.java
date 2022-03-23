@@ -6,5 +6,7 @@ public class Variables {
     public final static String LIST_SONG_MODEL_OBJECT = "ListSongModelObject";
     public final static String POSITION = "position";
     public final static String PLAYLIST_OBJECT = "playlistObject";
+    public final static String PLAYLIST_TITLE = "playlistName";
+    public final static String PLAYLIST_ID = "playlistID";
 
 }

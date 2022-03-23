@@ -60,7 +60,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_simple_player);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         ViewBinding();

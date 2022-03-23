@@ -44,13 +44,22 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.textView.setText(list.get(position).getName());
+        holder.textView.setText(list.get(position).getTitle());
 
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(context, ListSongActivity.class);
             intent.putExtra(Variables.PLAYLIST_OBJECT, (Serializable) list.get(position).getSong());
-            Log.i("TAG1", "playlist adapter: ok " + list.get(position).getSong());
+            intent.putExtra(Variables.PLAYLIST_ID, list.get(position).getID());
+            intent.putExtra(Variables.PLAYLIST_TITLE, list.get(position).getTitle());
+//            Log.i("TAG1", "playlist adapter: ok " + list.get(position).getSong());
             context.startActivity(intent);
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                return false;
+            }
         });
     }
 

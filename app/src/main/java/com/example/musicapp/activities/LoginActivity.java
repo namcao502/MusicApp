@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         viewBinding();
         listener();
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
     }
 
     private void listener() {
