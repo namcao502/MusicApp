@@ -1,7 +1,11 @@
 package com.example.musicapp.activities;
 
+import static android.os.Environment.DIRECTORY_DOWNLOADS;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,17 +13,28 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
 import com.example.musicapp.Variables;
 import com.example.musicapp.models.SongModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -27,9 +42,8 @@ import java.util.List;
 public class SimplePlayerActivity extends AppCompatActivity {
 
     TextView textViewStart, textViewEnd, textViewTitle, textViewArtist;
-    ImageView imageView, imageViewPlay, imageViewPrevious, imageViewNext;
+    ImageView imageView, imageViewPlay, imageViewPrevious, imageViewNext, imageViewDownload;
     SeekBar seekBar, seekBarVolume;
-    //SongModel songModel;
     List<SongModel> songModelList;
     int songPosition = 0;
     MediaPlayer mediaPlayer;
@@ -39,6 +53,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         mediaPlayer.pause();
+        imageViewPlay.setImageResource(R.drawable.icons8_play_64);
     }
 
     @Override
@@ -60,6 +75,11 @@ public class SimplePlayerActivity extends AppCompatActivity {
     }
 
     private void Listener() {
+
+        imageViewDownload.setOnClickListener(view -> {
+            DowloadMusicFile();
+        });
+
         imageViewNext.setOnClickListener(view -> {
             songPosition += 1;
             int maxLength = songModelList.size();
@@ -115,6 +135,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
             SetTime();
             UpdateProgress();
         });
+
         imageViewPlay.setOnClickListener(view -> {
             if (mediaPlayer.isPlaying()){
                 mediaPlayer.pause();
@@ -127,6 +148,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
             SetTime();
             UpdateProgress();
         });
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -144,6 +166,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
                 UpdateProgress();
             }
         });
+
         try {
             audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             seekBarVolume.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
@@ -197,6 +220,52 @@ public class SimplePlayerActivity extends AppCompatActivity {
         });
     }
 
+    private void DownloadFile(Context context, String fileName, String fileExtension, String destinationDirectory, String url){
+
+        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+
+        Uri uri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalFilesDir(context, destinationDirectory, fileName + fileExtension);
+
+        downloadManager.enqueue(request);
+    }
+
+    private void DowloadMusicFile() {
+
+        FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+        StorageReference storageReference = firebaseStorage.getReference();;
+        StorageReference reference;
+
+        ProgressDialog pd = new ProgressDialog(this);
+        pd.setMessage("Đang chuẩn bị tải về!");
+        pd.setIndeterminate(true);
+        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pd.show();
+
+        String songTitle = songModelList.get(songPosition).getTitle();
+
+        reference = storageReference.child( "Songs/"+ songTitle + ".mp3");
+
+        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                String url = uri.toString();
+                DownloadFile(SimplePlayerActivity.this, songTitle, "mp3", DIRECTORY_DOWNLOADS, url);
+                Toast.makeText(SimplePlayerActivity.this, "Đang tải về", Toast.LENGTH_SHORT).show();
+                pd.dismiss();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(SimplePlayerActivity.this, "Không tải được", Toast.LENGTH_LONG).show();
+                pd.dismiss();
+            }
+        });
+    }
+
     private void UpdateProgress(){
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -244,6 +313,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
         textViewStart = findViewById(R.id.textViewStart);
         textViewEnd = findViewById(R.id.textViewEnd);
         textViewTitle = findViewById(R.id.textViewTitlePlayer);
+        textViewArtist = findViewById(R.id.textViewArtistPlayer);
+
         seekBar = findViewById(R.id.seekBar);
         seekBarVolume = findViewById(R.id.seekBarVolume);
 
@@ -251,26 +322,11 @@ public class SimplePlayerActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageViewPlayer);
         imageViewNext = findViewById(R.id.imageViewNext);
         imageViewPrevious = findViewById(R.id.imageViewPrevious);
-        textViewArtist = findViewById(R.id.textViewArtistPlayer);
+        imageViewDownload = findViewById(R.id.imageViewDownload);
 
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-
-//        songModel = (SongModel) intent.getSerializableExtra(Variables.SONG_MODEL_OBJECT);
-//        Glide.with(getApplicationContext()).load(songModel.getImg_url()).into(imageView);
-//        textViewTitle.setText(songModel.getTitle());
-//        int artistListLength = songModel.getArtist().size();
-//        String artistText = "";
-//        for (int i=0; i<artistListLength; i++){
-//            if (i == artistListLength - 1){
-//                artistText += songModel.getArtist().get(i).getName();
-//            }
-//            else {
-//                artistText += songModel.getArtist().get(i).getName() + ", ";
-//            }
-//        }
-//        textViewArtist.setText(artistText);
         Intent intent = getIntent();
         songModelList = (List<SongModel>) intent.getSerializableExtra(Variables.LIST_SONG_MODEL_OBJECT);
         songPosition = intent.getIntExtra(Variables.POSITION, 0);
@@ -302,6 +358,5 @@ public class SimplePlayerActivity extends AppCompatActivity {
         }
         mediaPlayer.start();
         imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
-
     }
 }
