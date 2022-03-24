@@ -3,8 +3,12 @@ package com.example.musicapp.activities;
 import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -12,11 +16,13 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -25,11 +31,20 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
 import com.example.musicapp.Variables;
+import com.example.musicapp.adapters.AddToPlaylistDialogAdapter;
+import com.example.musicapp.models.PlaylistModel;
 import com.example.musicapp.models.SongModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -37,12 +52,13 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SimplePlayerActivity extends AppCompatActivity {
 
     TextView textViewStart, textViewEnd, textViewTitle, textViewArtist;
-    ImageView imageView, imageViewPlay, imageViewPrevious, imageViewNext, imageViewDownload;
+    ImageView imageView, imageViewPlay, imageViewPrevious, imageViewNext, imageViewDownload, imageViewAddToPlaylist;
     SeekBar seekBar, seekBarVolume;
     List<SongModel> songModelList;
     int songPosition = 0;
@@ -63,6 +79,10 @@ public class SimplePlayerActivity extends AppCompatActivity {
         //getSupportActionBar().hide();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
+        Intent intent = getIntent();
+        songModelList = (List<SongModel>) intent.getSerializableExtra(Variables.LIST_SONG_MODEL_OBJECT);
+        songPosition = intent.getIntExtra(Variables.POSITION, 0);
+
         ViewBinding();
         try {
             CreateMediaPlayer();
@@ -75,6 +95,46 @@ public class SimplePlayerActivity extends AppCompatActivity {
     }
 
     private void Listener() {
+
+        imageViewAddToPlaylist.setOnClickListener(view -> {
+
+            Dialog dialog = new Dialog(SimplePlayerActivity.this);
+            dialog.setContentView(R.layout.activity_simple_player_add_to_playlist_dialog);
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+
+//            Button buttonAddToPlaylistDialogAddAll = dialog.findViewById(R.id.buttonAddToPlaylistDialogAddAll);
+//            buttonAddToPlaylistDialogAddAll.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//
+//                }
+//            });
+
+            List<PlaylistModel> playlistModelList = new ArrayList<>();
+            AddToPlaylistDialogAdapter addToPlaylistDialogAdapter = new AddToPlaylistDialogAdapter(SimplePlayerActivity.this, playlistModelList, songModelList.get(songPosition).getTitle());
+            RecyclerView recyclerViewAddToPlaylist = dialog.findViewById(R.id.recyclerView_add_to_playlist_dialog);
+            recyclerViewAddToPlaylist.setLayoutManager(new LinearLayoutManager(SimplePlayerActivity.this));
+            recyclerViewAddToPlaylist.setAdapter(addToPlaylistDialogAdapter);
+
+            //load all playlist in db
+            db.collection("Playlist").document(auth.getUid()).collection("User")
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()){
+                        for (QueryDocumentSnapshot doc : task.getResult()){
+                            PlaylistModel playlistModel = doc.toObject(PlaylistModel.class);
+                            playlistModelList.add(playlistModel);
+                            Log.i("TAG1", "simple player activity: " + playlistModel);
+                        }
+                        addToPlaylistDialogAdapter.notifyDataSetChanged();
+                        dialog.show();
+                    }
+                }
+            });
+        });
 
         imageViewDownload.setOnClickListener(view -> {
             DowloadMusicFile();
@@ -323,13 +383,10 @@ public class SimplePlayerActivity extends AppCompatActivity {
         imageViewNext = findViewById(R.id.imageViewNext);
         imageViewPrevious = findViewById(R.id.imageViewPrevious);
         imageViewDownload = findViewById(R.id.imageViewDownload);
+        imageViewAddToPlaylist = findViewById(R.id.imageViewAddToPlaylist);
 
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-        Intent intent = getIntent();
-        songModelList = (List<SongModel>) intent.getSerializableExtra(Variables.LIST_SONG_MODEL_OBJECT);
-        songPosition = intent.getIntExtra(Variables.POSITION, 0);
 
     }
 

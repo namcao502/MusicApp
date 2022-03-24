@@ -12,10 +12,9 @@
         android:ems="10"
         android:hint="Nhập tên danh sách mới"
         android:inputType="textPersonName"
-        android:padding="10dp"
         app:layout_constraintEnd_toStartOf="@+id/buttonAddNewListDialog"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewAddNewPlaylist" />
 
     <Button
         android:id="@+id/buttonAddNewListDialog"
@@ -24,5 +23,17 @@
         android:text="Thêm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/editTextAddNewListDialog"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAddNewPlaylist" />
+
+    <TextView
+        android:padding="10dp"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:id="@+id/textViewAddNewPlaylist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thêm danh sách mới"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,23 +7,20 @@ public class PlaylistModel implements Serializable {
 
     String title;
     List<String> song;
-    String ID;
-
-    public String getID() {
-        return ID;
-    }
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
-    public PlaylistModel() {
-
-    }
+    String id;
 
     public PlaylistModel(String title, List<String> song) {
         this.title = title;
         this.song = song;
+    }
+
+    public PlaylistModel(String title, List<String> song, String id) {
+        this.title = title;
+        this.song = song;
+        this.id = id;
+    }
+
+    public PlaylistModel() {
     }
 
     public String getTitle() {
@@ -42,12 +39,20 @@ public class PlaylistModel implements Serializable {
         this.song = song;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "PlaylistModel{" +
                 "title='" + title + '\'' +
                 ", song=" + song +
-                ", ID='" + ID + '\'' +
+                ", id='" + id + '\'' +
                 '}';
     }
 }

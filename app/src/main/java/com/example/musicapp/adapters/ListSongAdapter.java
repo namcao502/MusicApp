@@ -148,7 +148,7 @@ public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ViewHo
                                     documentReference.delete();
                                     //update
                                     playlistModel = new PlaylistModel(playlistTitle, songTitle);
-                                    playlistModel.setID(playlistID);
+                                    playlistModel.setId(playlistID);
 //                            Log.i("TAG1", "onClick2: " + playlistModel);
                                     db.collection("Playlist").document(auth.getUid())
                                             .collection("User").document(playlistID).set(playlistModel).addOnCompleteListener(new OnCompleteListener<Void>() {

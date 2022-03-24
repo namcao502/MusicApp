@@ -164,7 +164,7 @@ public class ListSongActivity extends AppCompatActivity {
                                 }
 
                                 PlaylistModel playlistModel = new PlaylistModel(playlistTitle, songTitle);
-                                playlistModel.setID(playlistID);
+                                playlistModel.setId(playlistID);
                                 db.collection("Playlist").document(auth.getUid())
                                         .collection("User").document(playlistID).set(playlistModel).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override

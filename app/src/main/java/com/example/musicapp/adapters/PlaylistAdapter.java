@@ -57,7 +57,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(context, ListSongActivity.class);
             intent.putExtra(Variables.PLAYLIST_OBJECT, (Serializable) list.get(position).getSong());
-            intent.putExtra(Variables.PLAYLIST_ID, list.get(position).getID());
+            intent.putExtra(Variables.PLAYLIST_ID, list.get(position).getId());
             intent.putExtra(Variables.PLAYLIST_TITLE, list.get(position).getTitle());
 //            Log.i("TAG1", "playlist adapter: ok " + list.get(position).getSong());
             context.startActivity(intent);
@@ -90,7 +90,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
                         if (!(playlistName.isEmpty())){
                             db.collection("Playlist").document(auth.getUid()).collection("User")
-                                    .document(list.get(position).getID())
+                                    .document(list.get(position).getId())
                                     .update("title", playlistName).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
@@ -110,7 +110,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
                     public void onClick(View view) {
 
                         db.collection("Playlist").document(auth.getUid()).collection("User")
-                                .document(list.get(position).getID()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                .document(list.get(position).getId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {
                                 Toast.makeText(context, "Xoá thành công", Toast.LENGTH_SHORT).show();

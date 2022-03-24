@@ -31,6 +31,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -77,55 +79,50 @@ public class PlaylistFragment extends Fragment {
         toolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.playlist_menu_add:
-                        //                        Toast.makeText(getContext(), "add", Toast.LENGTH_SHORT).show();
-                        Dialog dialog = new Dialog(getContext());
-                        dialog.setContentView(R.layout.fragment_playlist_add_new_list_dialog);
-                        dialog.show();
+        toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.playlist_menu_add:
 
-                        Button buttonAdd = dialog.findViewById(R.id.buttonAddNewListDialog);
-                        EditText editTextTitle = dialog.findViewById(R.id.editTextAddNewListDialog);
+                    Dialog dialog = new Dialog(getContext());
+                    dialog.setContentView(R.layout.fragment_playlist_add_new_list_dialog);
+                    dialog.show();
 
-                        buttonAdd.setOnClickListener(view1 -> {
+                    Button buttonAdd = dialog.findViewById(R.id.buttonAddNewListDialog);
+                    EditText editTextTitle = dialog.findViewById(R.id.editTextAddNewListDialog);
 
-                            String playlistTitle = editTextTitle.getText().toString();
+                    buttonAdd.setOnClickListener(view1 -> {
 
-                            if (playlistTitle.isEmpty()) {
-                                Toast.makeText(getContext(), "Vui lòng nhập tên danh sách phát", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+                        String playlistTitle = editTextTitle.getText().toString();
 
-                            List<String> listSong = new ArrayList<>();
-//                            Map<String, Object> map = new HashMap<>();
-//                            map.put("name", playlistTitle);
-//                            map.put("song", listSong);
-                            PlaylistModel playlistModel = new PlaylistModel(playlistTitle, listSong);
+                        if (playlistTitle.isEmpty()) {
+                            Toast.makeText(getContext(), "Vui lòng nhập tên danh sách phát", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                            db.collection("Playlist").document(auth.getUid()).collection("User")
-                                    .document().set(playlistModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()){
-                                        Toast.makeText(getContext(), "Thêm thành công", Toast.LENGTH_SHORT).show();
-                                        dialog.dismiss();
-                                    }
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(getContext(), "Thêm thất bại", Toast.LENGTH_SHORT).show();
+                        List<String> listSong = new ArrayList<>();
+                        PlaylistModel playlistModel = new PlaylistModel(playlistTitle, listSong);
+                        DocumentReference documentReference = db.collection("Playlist").document(auth.getUid()).collection("User").document();
+                        playlistModel.setId(documentReference.getId());
+                        documentReference.set(playlistModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()){
+                                    Toast.makeText(getContext(), "Thêm thành công", Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
                                 }
-                            });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getContext(), "Thêm thất bại", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
                         });
-                        return true;
-                }
-                return true;
+
+                    });
+                    return true;
             }
+            return true;
         });
 
         //processDialog
@@ -146,7 +143,7 @@ public class PlaylistFragment extends Fragment {
                     if (task.isSuccessful()){
                         for (QueryDocumentSnapshot doc : task.getResult()){
                             PlaylistModel playlistModel = doc.toObject(PlaylistModel.class);
-                            playlistModel.setID(doc.getId());
+                            playlistModel.setId(doc.getId());
                             playlistModelList.add(playlistModel);
                         }
                         playlistAdapter.notifyDataSetChanged();
