@@ -43,13 +43,6 @@ public class AllSongFragment extends Fragment {
 
     FirebaseFirestore db;
 
-//    // list id song
-//    private int indexID = 0;
-//    private ArrayList<String> listIdSong = new ArrayList<>();
-//    private ArrayList<String> listUrlSong = new ArrayList<>();
-//    private ArrayList<String> listTitleSong = new ArrayList<>();
-//    private ArrayList<String> listImgUrlSong = new ArrayList<>();
-
     public AllSongFragment() {
         // Required empty public constructor
     }

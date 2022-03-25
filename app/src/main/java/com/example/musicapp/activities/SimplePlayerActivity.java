@@ -120,8 +120,29 @@ public class SimplePlayerActivity extends AppCompatActivity {
                 else {
                     CommentModel commentModel = new CommentModel(auth.getUid(), songModelList.get(songPosition).getTitle(), detail, auth.getCurrentUser().getEmail());
                     db.collection("Comment").document(auth.getUid()).collection("User").document().set(commentModel)
-                            .addOnCompleteListener(task ->
-                                    Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thành công", Toast.LENGTH_SHORT).show())
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thành công", Toast.LENGTH_SHORT).show();
+
+                                    commentModelList.clear();
+                                    editTextComment.clearFocus();
+
+                                    db.collection("Comment").document(auth.getUid()).collection("User")
+                                            .whereEqualTo("song_title", songModelList.get(songPosition).getTitle())
+                                            .get().addOnCompleteListener(task2 -> {
+                                        if (task.isSuccessful()){
+                                            for (QueryDocumentSnapshot doc : task2.getResult()){
+                                                CommentModel commentModel = doc.toObject(CommentModel.class);
+                                                commentModelList.add(commentModel);
+                                            }
+                                            commentAdapter.notifyDataSetChanged();
+                                        }
+                                    });
+
+                                    editTextComment.setText("");
+                                }
+                            })
                             .addOnFailureListener(e ->
                                     Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thất bại", Toast.LENGTH_SHORT).show());
                 }
@@ -440,6 +461,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
     private void CreateMediaPlayer() throws IOException {
 
         commentModelList.clear();
+        editTextComment.setText("");
+        editTextComment.clearFocus();
 
         db.collection("Comment").document(auth.getUid()).collection("User")
                 .whereEqualTo("song_title", songModelList.get(songPosition).getTitle())

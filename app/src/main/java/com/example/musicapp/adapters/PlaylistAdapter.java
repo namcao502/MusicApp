@@ -59,7 +59,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             intent.putExtra(Variables.PLAYLIST_OBJECT, (Serializable) list.get(position).getSong());
             intent.putExtra(Variables.PLAYLIST_ID, list.get(position).getId());
             intent.putExtra(Variables.PLAYLIST_TITLE, list.get(position).getTitle());
-//            Log.i("TAG1", "playlist adapter: ok " + list.get(position).getSong());
+            intent.putExtra(Variables.INTENT_TYPE, "playlistIntent");
             context.startActivity(intent);
         });
 

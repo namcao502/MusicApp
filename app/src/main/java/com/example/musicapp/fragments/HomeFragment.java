@@ -48,6 +48,8 @@ public class HomeFragment extends Fragment {
     CountryAdapter countryAdapter;
     List<CountryModel> countryModelList;
 
+    ImageSlider imageSlider;
+
 
     public HomeFragment(){
 
@@ -66,26 +68,44 @@ public class HomeFragment extends Fragment {
         recyclerViewArtist = view.findViewById(R.id.recyclerView_artist);
         recyclerViewCountry = view.findViewById(R.id.recyclerView_country);
         linearLayoutHome = view.findViewById(R.id.home_layout);
+        imageSlider = view.findViewById(R.id.image_slider);
 
         linearLayoutHome.setVisibility(View.GONE);
         db = FirebaseFirestore.getInstance();
 
+        LoadImageSlider();
+
+        LoadDialog();
+
+        LoadAllGenre();
+
+        LoadAllArtist();
+
+        LoadAllCountry();
+
+        return view;
+    }
+
+    private void LoadImageSlider() {
         //image slider
-        ImageSlider imageSlider = view.findViewById(R.id.image_slider);
         List<SlideModel> slideModels = new ArrayList<>();
         slideModels.add(new SlideModel(R.drawable.ncs_slide, ScaleTypes.CENTER_CROP));
         slideModels.add(new SlideModel(R.drawable.alan_walker_slide, ScaleTypes.CENTER_CROP));
         slideModels.add(new SlideModel(R.drawable.bolero_slide, ScaleTypes.CENTER_CROP));
         imageSlider.setImageList(slideModels);
+    }
 
+    private void LoadDialog() {
         //progress dialog
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setTitle("Chào mừng bạn đến với MusicApp!");
         progressDialog.setMessage("Vui lòng chờ...");
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
+    }
 
-        //setup data for category
+    private void LoadAllGenre() {
+        //setup data for genre
         recyclerViewGenre.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         genreModelList = new ArrayList<>();
         genreAdapter = new GenreAdapter(getContext(), genreModelList);
@@ -102,7 +122,9 @@ public class HomeFragment extends Fragment {
                 genreAdapter.notifyDataSetChanged();
             }
         });
+    }
 
+    private void LoadAllArtist() {
         //setup data for artist
         recyclerViewArtist.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         artistModelList = new ArrayList<>();
@@ -118,7 +140,9 @@ public class HomeFragment extends Fragment {
                 artistAdapter.notifyDataSetChanged();
             }
         });
+    }
 
+    private void LoadAllCountry() {
         //setup data for country
         recyclerViewCountry.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         countryModelList = new ArrayList<>();
@@ -133,7 +157,5 @@ public class HomeFragment extends Fragment {
                 countryAdapter.notifyDataSetChanged();
             }
         });
-
-        return view;
     }
 }

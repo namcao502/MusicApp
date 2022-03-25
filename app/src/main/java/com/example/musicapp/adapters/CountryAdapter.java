@@ -1,6 +1,7 @@
 package com.example.musicapp.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
+import com.example.musicapp.Variables;
+import com.example.musicapp.activities.ListSongActivity;
 import com.example.musicapp.models.ArtistModel;
 import com.example.musicapp.models.CountryModel;
 
@@ -37,6 +40,13 @@ public class CountryAdapter extends RecyclerView.Adapter<CountryAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Glide.with(context).load(list.get(position).getImg_url()).into(holder.imageView);
         holder.textView.setText(list.get(position).getName());
+
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(context, ListSongActivity.class);
+            intent.putExtra(Variables.INTENT_TYPE, "countryIntent");
+            intent.putExtra(Variables.COUNTRY_TITLE, list.get(position).getName());
+            context.startActivity(intent);
+        });
     }
 
     @Override

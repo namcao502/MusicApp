@@ -43,11 +43,14 @@ public class ListSongActivity extends AppCompatActivity {
     RecyclerView recyclerViewListSong;
     List<SongModel> songModelList;
     ListSongAdapter listSongAdapter;
-    List<String> songTitleList;
+    List<String> songTitleList = new ArrayList<>();
+
     FirebaseFirestore db;
     FirebaseAuth auth;
 
     Toolbar toolbar;
+
+    Intent intent;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -61,42 +64,90 @@ public class ListSongActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_song);
 
-        //getSupportActionBar().hide();
+        ViewBinding();
 
+        LoadToolbar();
+
+        if (GetDataFromIntent().equals("playlistIntent")){
+            LoadAllReceivedSongFromPlaylist((List<String>) intent.getSerializableExtra(Variables.PLAYLIST_OBJECT));
+        }
+
+        if (GetDataFromIntent().equals("artistIntent")){
+            String artistTitle = intent.getStringExtra(Variables.ARTIST_TITLE);
+            LoadAllReceivedSongFromArtist(artistTitle);
+            toolbar.setVisibility(View.GONE);
+        }
+
+        if (GetDataFromIntent().equals("genreIntent")){
+            String genreTitle = intent.getStringExtra(Variables.GENRE_TITLE);
+            LoadAllReceivedSongFromGenre(genreTitle);
+            toolbar.setVisibility(View.GONE);
+        }
+
+        if (GetDataFromIntent().equals("countryIntent")){
+            String countryTitle = intent.getStringExtra(Variables.COUNTRY_TITLE);
+            LoadAllReceivedSongFromCountry(countryTitle);
+            toolbar.setVisibility(View.GONE);
+        }
+    }
+
+    private void LoadAllReceivedSongFromCountry(String countryTitle) {
+        db.collection("Song").whereEqualTo("country", countryTitle).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                for (QueryDocumentSnapshot doc : task.getResult()){
+                    SongModel songModel = doc.toObject(SongModel.class);
+                    songModelList.add(songModel);
+                }
+                listSongAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void LoadAllReceivedSongFromGenre(String genreTitle) {
+        db.collection("Song").whereEqualTo("genre", genreTitle).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                for (QueryDocumentSnapshot doc : task.getResult()){
+                    SongModel songModel = doc.toObject(SongModel.class);
+                    songModelList.add(songModel);
+                }
+                listSongAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void LoadAllReceivedSongFromArtist(String artistTitle) {
+        db.collection("Song").whereArrayContains("artist", artistTitle).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                for (QueryDocumentSnapshot doc : task.getResult()){
+                    SongModel songModel = doc.toObject(SongModel.class);
+                    songModelList.add(songModel);
+                }
+                listSongAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private String GetDataFromIntent() {
+        //get data from intent
+        intent = getIntent();
+        return intent.getStringExtra(Variables.INTENT_TYPE);
+    }
+
+    private void ViewBinding() {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         recyclerViewListSong = findViewById(R.id.recyclerView_list_song);
+        toolbar = findViewById(R.id.list_song_toolbar);
 
         recyclerViewListSong.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         songModelList = new ArrayList<>();
-
-        //get data from intent
-        Intent intent = getIntent();
-        songTitleList = new ArrayList<>();
-        songTitleList = (List<String>) intent.getSerializableExtra(Variables.PLAYLIST_OBJECT);
-
         listSongAdapter = new ListSongAdapter(getApplicationContext(), songModelList, intent);
         recyclerViewListSong.setAdapter(listSongAdapter);
+    }
 
-        //get data from song collection
-        if (songTitleList != null){
-            for (String x : songTitleList){
-                db.collection("Song")
-                        .whereEqualTo("title", x).get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
-                        for (QueryDocumentSnapshot doc : task.getResult()){
-                            SongModel songModel = doc.toObject(SongModel.class);
-                            songModelList.add(songModel);
-//                            Log.i("TAG1", "list song activity: " + songModelList.toString());
-                        }
-                        listSongAdapter.notifyDataSetChanged();
-                    }
-                });
-            }
-        }
-
+    private void LoadToolbar() {
         //toolbar
-        toolbar = findViewById(R.id.list_song_toolbar);
+
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
@@ -104,7 +155,9 @@ public class ListSongActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
+
                     case R.id.playlist_menu_add:
+
                         Dialog dialog = new Dialog(ListSongActivity.this);
                         dialog.setContentView(R.layout.activity_list_song_add_new_song_dialog);
 
@@ -190,5 +243,25 @@ public class ListSongActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void LoadAllReceivedSongFromPlaylist(List<String> songTitleList) {
+
+        //get data from song collection
+        if (songTitleList != null){
+            for (String x : songTitleList){
+                db.collection("Song")
+                        .whereEqualTo("title", x).get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        for (QueryDocumentSnapshot doc : task.getResult()){
+                            SongModel songModel = doc.toObject(SongModel.class);
+                            songModelList.add(songModel);
+//                            Log.i("TAG1", "list song activity: " + songModelList.toString());
+                        }
+                        listSongAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        }
     }
 }
