@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,8 +26,9 @@ public class LoginActivity extends AppCompatActivity {
     EditText editTextEmail, editTextPassword;
     TextView textViewSignUp;
     Button buttonSignIn, buttonSignInWithGoogle;
+    CheckBox checkBoxRemember;
     private FirebaseAuth firebaseAuth;
-    SharedPreferences sharedPreferences;
+    SharedPreferences sharedPreferencesFirstTime, sharedPreferencesRemember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,20 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
+                            if (checkBoxRemember.isChecked()){
+                                SharedPreferences.Editor editor = sharedPreferencesRemember.edit();
+                                editor.putString("email", email);
+                                editor.putString("password", password);
+                                editor.putBoolean("check", true);
+                                editor.commit();
+                            }
+                            else {
+                                SharedPreferences.Editor editor = sharedPreferencesRemember.edit();
+                                editor.putString("email", "");
+                                editor.putString("password", "");
+                                editor.putBoolean("check", false);
+                                editor.commit();
+                            }
                             Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         }
@@ -81,14 +97,13 @@ public class LoginActivity extends AppCompatActivity {
         textViewSignUp = findViewById(R.id.textViewSignUp);
         buttonSignIn = findViewById(R.id.buttonSignUp);
         buttonSignInWithGoogle = findViewById(R.id.buttonSignInWithGoogle);
+        checkBoxRemember = findViewById(R.id.checkBoxRemember);
 
-        editTextEmail.setText("nam502@gmail.com");
-        editTextPassword.setText("nam502");
-
-        sharedPreferences = getSharedPreferences("FirstTimeScreen", MODE_PRIVATE);
-        boolean isFirstTime = sharedPreferences.getBoolean("firstTime", true);
+        sharedPreferencesFirstTime = getSharedPreferences("FirstTimeScreen", MODE_PRIVATE);
+        boolean isFirstTime = sharedPreferencesFirstTime.getBoolean("firstTime", true);
         if (isFirstTime){
-            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            SharedPreferences.Editor editor = sharedPreferencesFirstTime.edit();
             editor.putBoolean("firstTime", false);
             editor.commit();
 
@@ -96,5 +111,12 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+
+        sharedPreferencesRemember = getSharedPreferences("LoginData", MODE_PRIVATE);
+        editTextEmail.setText(sharedPreferencesRemember.getString("email", ""));
+        editTextPassword.setText(sharedPreferencesRemember.getString("password", ""));
+        checkBoxRemember.setChecked(sharedPreferencesRemember.getBoolean("check", false));
+
+
     }
 }
