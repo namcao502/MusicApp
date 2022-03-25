@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -32,6 +33,8 @@ import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
 import com.example.musicapp.Variables;
 import com.example.musicapp.adapters.AddToPlaylistDialogAdapter;
+import com.example.musicapp.adapters.CommentAdapter;
+import com.example.musicapp.models.CommentModel;
 import com.example.musicapp.models.PlaylistModel;
 import com.example.musicapp.models.SongModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,10 +63,20 @@ public class SimplePlayerActivity extends AppCompatActivity {
     TextView textViewStart, textViewEnd, textViewTitle, textViewArtist;
     ImageView imageView, imageViewPlay, imageViewPrevious, imageViewNext, imageViewDownload, imageViewAddToPlaylist;
     SeekBar seekBar, seekBarVolume;
+    RecyclerView recyclerViewComment;
+    EditText editTextComment;
+    Button buttonAddComment;
+
     List<SongModel> songModelList;
     int songPosition = 0;
     MediaPlayer mediaPlayer;
     AudioManager audioManager = null;
+
+    FirebaseAuth auth;
+    FirebaseFirestore db;
+
+    List<CommentModel> commentModelList;
+    CommentAdapter commentAdapter;
 
     @Override
     protected void onPause() {
@@ -96,6 +109,25 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
     private void Listener() {
 
+        buttonAddComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String detail = editTextComment.getText().toString();
+                if (detail.isEmpty()){
+                    Toast.makeText(SimplePlayerActivity.this, "Vui lòng nhập nội dung", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else {
+                    CommentModel commentModel = new CommentModel(auth.getUid(), songModelList.get(songPosition).getTitle(), detail, auth.getCurrentUser().getEmail());
+                    db.collection("Comment").document(auth.getUid()).collection("User").document().set(commentModel)
+                            .addOnCompleteListener(task ->
+                                    Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thành công", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thất bại", Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+
         imageViewAddToPlaylist.setOnClickListener(view -> {
 
             Dialog dialog = new Dialog(SimplePlayerActivity.this);
@@ -127,7 +159,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot doc : task.getResult()){
                             PlaylistModel playlistModel = doc.toObject(PlaylistModel.class);
                             playlistModelList.add(playlistModel);
-                            Log.i("TAG1", "simple player activity: " + playlistModel);
+//                            Log.i("TAG1", "simple player activity: " + playlistModel);
                         }
                         addToPlaylistDialogAdapter.notifyDataSetChanged();
                         dialog.show();
@@ -385,12 +417,41 @@ public class SimplePlayerActivity extends AppCompatActivity {
         imageViewDownload = findViewById(R.id.imageViewDownload);
         imageViewAddToPlaylist = findViewById(R.id.imageViewAddToPlaylist);
 
+        recyclerViewComment = findViewById(R.id.recyclerView_comment);
+
+        editTextComment = findViewById(R.id.editTextComment);
+
+        buttonAddComment = findViewById(R.id.buttonAddComment);
+
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+
+        //get comment data from db
+        recyclerViewComment.setLayoutManager(new LinearLayoutManager(SimplePlayerActivity.this));
+        commentModelList = new ArrayList<>();
+        commentAdapter = new CommentAdapter(this, commentModelList);
+        recyclerViewComment.setAdapter(commentAdapter);
 
     }
 
     private void CreateMediaPlayer() throws IOException {
+
+        commentModelList.clear();
+
+        db.collection("Comment").document(auth.getUid()).collection("User")
+                .whereEqualTo("song_title", songModelList.get(songPosition).getTitle())
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        for (QueryDocumentSnapshot doc : task.getResult()){
+                            CommentModel commentModel = doc.toObject(CommentModel.class);
+                            commentModelList.add(commentModel);
+                        }
+                        commentAdapter.notifyDataSetChanged();
+                    }
+                });
 
         Glide.with(getApplicationContext()).load(songModelList.get(songPosition).getImg_url()).into(imageView);
         textViewTitle.setText(songModelList.get(songPosition).getTitle());

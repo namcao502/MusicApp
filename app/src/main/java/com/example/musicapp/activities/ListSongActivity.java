@@ -170,7 +170,6 @@ public class ListSongActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         Toast.makeText(ListSongActivity.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
-                                        recreate();
                                         dialog.dismiss();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {

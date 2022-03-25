@@ -7,25 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".activities.RegisterActivity">
 
-    <EditText
-        android:textColor="@color/pink"
-        android:id="@+id/editTextName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/edit_text_bg"
-        android:drawableLeft="@drawable/ic_baseline_account_circle"
-        android:drawablePadding="15dp"
-        android:ems="10"
-        android:hint="Tên của bạn"
-        android:inputType="textPersonName"
-        android:padding="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
-
     <TextView
         android:textColor="@color/pink"
         android:id="@+id/textViewSignIn"
@@ -41,7 +22,6 @@
         app:layout_constraintTop_toBottomOf="@+id/buttonSignUp" />
 
     <EditText
-        android:textColor="@color/pink"
         android:id="@+id/editTextEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -55,9 +35,10 @@
         android:hint="Email"
         android:inputType="textPersonName"
         android:padding="15dp"
+        android:textColor="@color/pink"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextName" />
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <Button
         android:id="@+id/buttonSignUp"

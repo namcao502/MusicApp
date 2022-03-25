@@ -53,10 +53,6 @@ public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ViewHo
         this.intent = intent;
     }
 
-    public ListSongAdapter(Context context, List<SongModel> songModelList) {
-        this.context = context;
-        this.songModelList = songModelList;
-    }
 
     @NonNull
     @Override

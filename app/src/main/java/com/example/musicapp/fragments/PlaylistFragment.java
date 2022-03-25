@@ -108,6 +108,7 @@ public class PlaylistFragment extends Fragment {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()){
                                     Toast.makeText(getContext(), "Thêm thành công", Toast.LENGTH_SHORT).show();
+                                    LoadAllPlaylist();
                                     dialog.dismiss();
                                 }
                             }
@@ -118,7 +119,6 @@ public class PlaylistFragment extends Fragment {
                                 dialog.dismiss();
                             }
                         });
-
                     });
                     return true;
             }
@@ -138,20 +138,25 @@ public class PlaylistFragment extends Fragment {
         playlistAdapter = new PlaylistAdapter(getContext(), playlistModelList);
         recyclerViewPlaylist.setAdapter(playlistAdapter);
 
-        db.collection("Playlist").document(Objects.requireNonNull(auth.getCurrentUser()).getUid()).
-                collection("User").get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
-                        for (QueryDocumentSnapshot doc : task.getResult()){
-                            PlaylistModel playlistModel = doc.toObject(PlaylistModel.class);
-                            playlistModel.setId(doc.getId());
-                            playlistModelList.add(playlistModel);
-                        }
-                        playlistAdapter.notifyDataSetChanged();
-                        progressDialog.dismiss();
-                        linearLayoutPlaylist.setVisibility(View.VISIBLE);
-                    }
-        });
+        LoadAllPlaylist();
 
         return view;
+    }
+
+    private void LoadAllPlaylist(){
+        playlistModelList.clear();
+        db.collection("Playlist").document(Objects.requireNonNull(auth.getCurrentUser()).getUid()).
+                collection("User").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                for (QueryDocumentSnapshot doc : task.getResult()){
+                    PlaylistModel playlistModel = doc.toObject(PlaylistModel.class);
+                    playlistModel.setId(doc.getId());
+                    playlistModelList.add(playlistModel);
+                }
+                playlistAdapter.notifyDataSetChanged();
+                progressDialog.dismiss();
+                linearLayoutPlaylist.setVisibility(View.VISIBLE);
+            }
+        });
     }
 }
