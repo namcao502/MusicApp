@@ -103,14 +103,11 @@ public class PlaylistFragment extends Fragment {
                         PlaylistModel playlistModel = new PlaylistModel(playlistTitle, listSong);
                         DocumentReference documentReference = db.collection("Playlist").document(auth.getUid()).collection("User").document();
                         playlistModel.setId(documentReference.getId());
-                        documentReference.set(playlistModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()){
-                                    Toast.makeText(getContext(), "Thêm thành công", Toast.LENGTH_SHORT).show();
-                                    LoadAllPlaylist();
-                                    dialog.dismiss();
-                                }
+                        documentReference.set(playlistModel).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()){
+                                Toast.makeText(getContext(), "Thêm thành công", Toast.LENGTH_SHORT).show();
+                                LoadAllPlaylist();
+                                dialog.dismiss();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override

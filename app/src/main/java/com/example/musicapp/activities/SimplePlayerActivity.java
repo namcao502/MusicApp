@@ -109,43 +109,37 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
     private void Listener() {
 
-        buttonAddComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String detail = editTextComment.getText().toString();
-                if (detail.isEmpty()){
-                    Toast.makeText(SimplePlayerActivity.this, "Vui lòng nhập nội dung", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                else {
-                    CommentModel commentModel = new CommentModel(auth.getUid(), songModelList.get(songPosition).getTitle(), detail, auth.getCurrentUser().getEmail());
-                    db.collection("Comment").document(auth.getUid()).collection("User").document().set(commentModel)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thành công", Toast.LENGTH_SHORT).show();
+        buttonAddComment.setOnClickListener(view -> {
+            String detail = editTextComment.getText().toString();
+            if (detail.isEmpty()){
+                Toast.makeText(SimplePlayerActivity.this, "Vui lòng nhập nội dung", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            else {
+                CommentModel commentModel = new CommentModel(auth.getUid(), songModelList.get(songPosition).getTitle(), detail, auth.getCurrentUser().getEmail());
+                db.collection("Comment").document(auth.getUid()).collection("User").document().set(commentModel)
+                        .addOnCompleteListener(task -> {
+                            Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thành công", Toast.LENGTH_SHORT).show();
 
-                                    commentModelList.clear();
-                                    editTextComment.clearFocus();
+                            commentModelList.clear();
+                            editTextComment.clearFocus();
 
-                                    db.collection("Comment").document(auth.getUid()).collection("User")
-                                            .whereEqualTo("song_title", songModelList.get(songPosition).getTitle())
-                                            .get().addOnCompleteListener(task2 -> {
-                                        if (task.isSuccessful()){
-                                            for (QueryDocumentSnapshot doc : task2.getResult()){
-                                                CommentModel commentModel = doc.toObject(CommentModel.class);
-                                                commentModelList.add(commentModel);
-                                            }
-                                            commentAdapter.notifyDataSetChanged();
-                                        }
-                                    });
-
-                                    editTextComment.setText("");
+                            db.collection("Comment").document(auth.getUid()).collection("User")
+                                    .whereEqualTo("song_title", songModelList.get(songPosition).getTitle())
+                                    .get().addOnCompleteListener(task2 -> {
+                                if (task.isSuccessful()){
+                                    for (QueryDocumentSnapshot doc : task2.getResult()){
+                                        CommentModel commentModel1 = doc.toObject(CommentModel.class);
+                                        commentModelList.add(commentModel1);
+                                    }
+                                    commentAdapter.notifyDataSetChanged();
                                 }
-                            })
-                            .addOnFailureListener(e ->
-                                    Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thất bại", Toast.LENGTH_SHORT).show());
-                }
+                            });
+
+                            editTextComment.setText("");
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thất bại", Toast.LENGTH_SHORT).show());
             }
         });
 
@@ -173,20 +167,17 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
             //load all playlist in db
             db.collection("Playlist").document(auth.getUid()).collection("User")
-                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()){
-                        for (QueryDocumentSnapshot doc : task.getResult()){
-                            PlaylistModel playlistModel = doc.toObject(PlaylistModel.class);
-                            playlistModelList.add(playlistModel);
-//                            Log.i("TAG1", "simple player activity: " + playlistModel);
+                    .get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()){
+                            for (QueryDocumentSnapshot doc : task.getResult()){
+                                PlaylistModel playlistModel = doc.toObject(PlaylistModel.class);
+                                playlistModelList.add(playlistModel);
+    //                            Log.i("TAG1", "simple player activity: " + playlistModel);
+                            }
+                            addToPlaylistDialogAdapter.notifyDataSetChanged();
+                            dialog.show();
                         }
-                        addToPlaylistDialogAdapter.notifyDataSetChanged();
-                        dialog.show();
-                    }
-                }
-            });
+                    });
         });
 
         imageViewDownload.setOnClickListener(view -> {

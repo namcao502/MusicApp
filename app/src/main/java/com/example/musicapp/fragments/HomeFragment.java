@@ -33,6 +33,7 @@ public class HomeFragment extends Fragment {
 
     RecyclerView recyclerViewGenre, recyclerViewArtist, recyclerViewCountry;
     FirebaseFirestore db;
+
     ProgressDialog progressDialog;
     LinearLayout linearLayoutHome;
 

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.musicapp.fragments.AllSongFragment;
+import com.example.musicapp.fragments.FindFragment;
 import com.example.musicapp.fragments.HomeFragment;
 import com.example.musicapp.fragments.PlaylistFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(new PlaylistFragment());
                     return true;
                 case R.id.navigation_search:
+                    loadFragment(new FindFragment());
                     return true;
                 case R.id.navigation_user:
                     return true;

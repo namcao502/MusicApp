@@ -63,65 +63,48 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             context.startActivity(intent);
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
+        holder.itemView.setOnLongClickListener(view -> {
 
-                Dialog dialog = new Dialog(context);
-                dialog.setContentView(R.layout.activity_list_song_delete_change_name_song_dialog);
+            Dialog dialog = new Dialog(context);
+            dialog.setContentView(R.layout.activity_list_song_delete_change_name_song_dialog);
 
-                Button buttonDelete, buttonChangeName;
-                EditText editTextPlaylistName;
+            Button buttonDelete, buttonChangeName;
+            EditText editTextPlaylistName;
 
-                buttonDelete = dialog.findViewById(R.id.buttonDeletePlaylist);
-                buttonChangeName = dialog.findViewById(R.id.buttonChangePlaylistNameDialog);
-                editTextPlaylistName = dialog.findViewById(R.id.editTextPlaylistName);
+            buttonDelete = dialog.findViewById(R.id.buttonDeletePlaylist);
+            buttonChangeName = dialog.findViewById(R.id.buttonChangePlaylistNameDialog);
+            editTextPlaylistName = dialog.findViewById(R.id.editTextPlaylistName);
 
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                FirebaseAuth auth = FirebaseAuth.getInstance();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            FirebaseAuth auth = FirebaseAuth.getInstance();
 
-                editTextPlaylistName.setText(list.get(position).getTitle());
+            editTextPlaylistName.setText(list.get(position).getTitle());
 
-                buttonChangeName.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+            buttonChangeName.setOnClickListener(view12 -> {
 
-                        String playlistName = editTextPlaylistName.getText().toString();
+                String playlistName = editTextPlaylistName.getText().toString();
 
-                        if (!(playlistName.isEmpty())){
-                            db.collection("Playlist").document(auth.getUid()).collection("User")
-                                    .document(list.get(position).getId())
-                                    .update("title", playlistName).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    Toast.makeText(context, "Đổi tên thành công", Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss();
-                                }
-                            });
-                        }
-                        else {
-                            Toast.makeText(context, "Vui lòng nhập tên mới", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-                buttonDelete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        db.collection("Playlist").document(auth.getUid()).collection("User")
-                                .document(list.get(position).getId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                Toast.makeText(context, "Xoá thành công", Toast.LENGTH_SHORT).show();
+                if (!(playlistName.isEmpty())){
+                    db.collection("Playlist").document(auth.getUid()).collection("User")
+                            .document(list.get(position).getId())
+                            .update("title", playlistName).addOnSuccessListener(unused -> {
+                                Toast.makeText(context, "Đổi tên thành công", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
-                            }
-                        });
-                    }
-                });
-                dialog.show();
-                return false;
-            }
+                            });
+                }
+                else {
+                    Toast.makeText(context, "Vui lòng nhập tên mới", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            buttonDelete.setOnClickListener(view1 ->
+                    db.collection("Playlist").document(auth.getUid()).collection("User")
+                    .document(list.get(position).getId()).delete().addOnSuccessListener(unused -> {
+                        Toast.makeText(context, "Xoá thành công", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }));
+            dialog.show();
+            return false;
         });
     }
 

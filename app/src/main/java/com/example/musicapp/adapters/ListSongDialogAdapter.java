@@ -97,41 +97,30 @@ public class ListSongDialogAdapter extends RecyclerView.Adapter<ListSongDialogAd
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 DocumentReference documentReference = db.collection("Playlist")
                         .document(auth.getCurrentUser().getUid()).collection("User").document(playlistID);
-                documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.get("song") != null){
-                            PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
-                            songTitleFirst[0] = playlistModel.getSong();
+                documentReference.get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.get("song") != null){
+                        PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
+                        songTitleFirst[0] = playlistModel.getSong();
 //                            Log.i("TAG1", "onClick: " + documentSnapshot.getClass());
 
-                            //add this row song to that list
-                            List<String> songTitle = new ArrayList<>();
-                            if (songTitleFirst[0] != null){
-                                for (String x : songTitleFirst[0]){
-                                    songTitle.add(x);
-                                }
+                        //add this row song to that list
+                        List<String> songTitle = new ArrayList<>();
+                        if (songTitleFirst[0] != null){
+                            for (String x : songTitleFirst[0]){
+                                songTitle.add(x);
                             }
-                            songTitle.add(songModelList.get(position).getTitle());
-                            documentReference.delete();
-                            //update
-                            playlistModel = new PlaylistModel(playlistTitle, songTitle);
-                            playlistModel.setId(playlistID);
-//                            Log.i("TAG1", "onClick2: " + playlistModel);
-                            db.collection("Playlist").document(auth.getUid())
-                                    .collection("User").document(playlistID).set(playlistModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    Toast.makeText(context, "Thêm " + songModelList.get(position).getTitle() + " thành công", Toast.LENGTH_SHORT).show();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(context, "Thêm thất bại", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-
                         }
+                        songTitle.add(songModelList.get(position).getTitle());
+                        documentReference.delete();
+                        //update
+                        playlistModel = new PlaylistModel(playlistTitle, songTitle);
+                        playlistModel.setId(playlistID);
+//                            Log.i("TAG1", "onClick2: " + playlistModel);
+                        db.collection("Playlist").document(auth.getUid())
+                                .collection("User").document(playlistID).set(playlistModel).addOnCompleteListener(task -> Toast.makeText(context, "Thêm " + songModelList.get(position).getTitle() + " thành công", Toast.LENGTH_SHORT).show())
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(context, "Thêm thất bại", Toast.LENGTH_SHORT).show());
+
                     }
                 });
             }

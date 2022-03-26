@@ -53,30 +53,27 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Vui lòng nhập mật khẩu của bạn!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            if (checkBoxRemember.isChecked()){
-                                SharedPreferences.Editor editor = sharedPreferencesRemember.edit();
-                                editor.putString("email", email);
-                                editor.putString("password", password);
-                                editor.putBoolean("check", true);
-                                editor.commit();
-                            }
-                            else {
-                                SharedPreferences.Editor editor = sharedPreferencesRemember.edit();
-                                editor.putString("email", "");
-                                editor.putString("password", "");
-                                editor.putBoolean("check", false);
-                                editor.commit();
-                            }
-                            Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        if (checkBoxRemember.isChecked()){
+                            SharedPreferences.Editor editor = sharedPreferencesRemember.edit();
+                            editor.putString("email", email);
+                            editor.putString("password", password);
+                            editor.putBoolean("check", true);
+                            editor.commit();
                         }
                         else {
-                            Toast.makeText(LoginActivity.this, "Tài khoản không tồn tại hoặc đã xảy ra lỗi!", Toast.LENGTH_SHORT).show();
+                            SharedPreferences.Editor editor = sharedPreferencesRemember.edit();
+                            editor.putString("email", "");
+                            editor.putString("password", "");
+                            editor.putBoolean("check", false);
+                            editor.commit();
                         }
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    }
+                    else {
+                        Toast.makeText(LoginActivity.this, "Tài khoản không tồn tại hoặc đã xảy ra lỗi!", Toast.LENGTH_SHORT).show();
                     }
                 });
 

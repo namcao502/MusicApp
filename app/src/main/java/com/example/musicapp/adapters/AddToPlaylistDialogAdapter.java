@@ -70,30 +70,27 @@ public class AddToPlaylistDialogAdapter extends RecyclerView.Adapter<AddToPlayli
             FirebaseAuth auth = FirebaseAuth.getInstance();
             DocumentReference documentReference = db.collection("Playlist")
                     .document(auth.getCurrentUser().getUid()).collection("User").document(list.get(position).getId());
-            documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if (documentSnapshot.get("song") != null){
-                        PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
-                        songTitleFirst[0] = playlistModel.getSong();
-                        playlistTitle = playlistModel.getTitle();
-                        //add this row song to that list
-                        List<String> songTitleList = new ArrayList<>();
-                        if (songTitleFirst[0] != null){
-                            for (String x : songTitleFirst[0]){
-                                songTitleList.add(x);
-                            }
+            documentReference.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.get("song") != null){
+                    PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
+                    songTitleFirst[0] = playlistModel.getSong();
+                    playlistTitle = playlistModel.getTitle();
+                    //add this row song to that list
+                    List<String> songTitleList = new ArrayList<>();
+                    if (songTitleFirst[0] != null){
+                        for (String x : songTitleFirst[0]){
+                            songTitleList.add(x);
                         }
-
-                        songTitleList.add(songTitle);
-
-                        db.collection("Playlist").document(auth.getUid()).collection("User").document(list.get(position).getId())
-                                .update("song", songTitleList).addOnCompleteListener(task ->
-                                    Toast.makeText(context, "Thêm " + songTitle + " vào " + playlistTitle +  " thành công", Toast.LENGTH_SHORT).show())
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(context, "Thêm thất bại", Toast.LENGTH_SHORT).show());
-
                     }
+
+                    songTitleList.add(songTitle);
+
+                    db.collection("Playlist").document(auth.getUid()).collection("User").document(list.get(position).getId())
+                            .update("song", songTitleList).addOnCompleteListener(task ->
+                                Toast.makeText(context, "Thêm " + songTitle + " vào " + playlistTitle +  " thành công", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(context, "Thêm thất bại", Toast.LENGTH_SHORT).show());
+
                 }
             });
         });

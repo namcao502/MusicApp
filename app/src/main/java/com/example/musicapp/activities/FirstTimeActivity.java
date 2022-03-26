@@ -69,12 +69,9 @@ public class FirstTimeActivity extends AppCompatActivity {
             }
         };
         viewPager.addOnPageChangeListener(changeListener);
-        buttonNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(FirstTimeActivity.this, LoginActivity.class));
-                finish();
-            }
+        buttonNext.setOnClickListener(view -> {
+            startActivity(new Intent(FirstTimeActivity.this, LoginActivity.class));
+            finish();
         });
     }
 

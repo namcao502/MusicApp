@@ -60,30 +60,9 @@ public class AllSongFragment extends Fragment {
         linearLayoutAllSong.setVisibility(View.GONE);
         db = FirebaseFirestore.getInstance();
 
-        //processDialog
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setTitle("Đang tải tất cả bài hát...");
-        progressDialog.setMessage("Vui lòng chờ...");
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.show();
+        LoadProgessDialog();
 
-        //setup data for song
-        recyclerViewAllSong.setLayoutManager(new LinearLayoutManager(getContext()));
-        songModelList = new ArrayList<>();
-        songAdapter = new SongAdapter(getContext(), songModelList);
-        recyclerViewAllSong.setAdapter(songAdapter);
-
-        db.collection("Song").get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    SongModel songModel = doc.toObject(SongModel.class);
-                    songModelList.add(songModel);
-                }
-                songAdapter.notifyDataSetChanged();
-                linearLayoutAllSong.setVisibility(View.VISIBLE);
-                progressDialog.dismiss();
-            }
-        });
+        LoadAllSong();
 
 //        db.collection("Song").get().addOnCompleteListener(task -> {
 //            if (task.isSuccessful()) {
@@ -111,6 +90,35 @@ public class AllSongFragment extends Fragment {
 //        });
 //
         return view;
+    }
+
+    private void LoadProgessDialog() {
+        //processDialog
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setTitle("Đang tải tất cả bài hát...");
+        progressDialog.setMessage("Vui lòng chờ...");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+    }
+
+    private void LoadAllSong() {
+        //setup data for song
+        recyclerViewAllSong.setLayoutManager(new LinearLayoutManager(getContext()));
+        songModelList = new ArrayList<>();
+        songAdapter = new SongAdapter(getContext(), songModelList);
+        recyclerViewAllSong.setAdapter(songAdapter);
+
+        db.collection("Song").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot doc : task.getResult()) {
+                    SongModel songModel = doc.toObject(SongModel.class);
+                    songModelList.add(songModel);
+                }
+                songAdapter.notifyDataSetChanged();
+                linearLayoutAllSong.setVisibility(View.VISIBLE);
+                progressDialog.dismiss();
+            }
+        });
     }
 //
 //    private void getArtistFromIdSong(int index) {
