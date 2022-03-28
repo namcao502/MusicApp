@@ -1,7 +1,6 @@
 package com.example.musicapp.activities;
 
 import android.os.Bundle;
-import android.view.View;
 
 import com.example.musicapp.fragments.AllSongFragment;
 import com.example.musicapp.fragments.FindFragment;
@@ -43,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_search:
                     loadFragment(new FindFragment());
                     return true;
-                case R.id.navigation_user:
+                case R.id.navigation_upload:
                     loadFragment(new UserFragment());
                     return true;
             }

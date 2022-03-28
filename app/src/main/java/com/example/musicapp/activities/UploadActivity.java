@@ -71,10 +71,10 @@ public class UploadActivity extends AppCompatActivity {
         ViewBinding();
 
         //test
-        editTextSongTitleUpload.setText("Waiting");
-        editTextGenreUpload.setText("EDM");
-        editTextArtistUpload.setText("Vicetone, Daisy Guttridge");
-        editTextCountryUpload.setText("US-UK");
+//        editTextSongTitleUpload.setText("The Spectre");
+//        editTextGenreUpload.setText("EDM");
+//        editTextArtistUpload.setText("Alan Walker");
+//        editTextCountryUpload.setText("US-UK");
 
         Listener();
 
@@ -82,17 +82,17 @@ public class UploadActivity extends AppCompatActivity {
 
     private void Listener() {
 
-        getAudioAndImageFromStorage();
-
-        imageViewUpload.setOnClickListener(view -> LoadImageFromStorage());
+        imageViewUpload.setOnClickListener(view -> {
+            LoadImageFromStorage();
+            UploadImageFileToFirestore();
+        });
 
         imageViewUploadFileAudio.setOnClickListener(view -> {
             LoadAudioFromStorage();
+            UploadAudioFileToFirestore();
         });
 
-        buttonUpload.setOnClickListener(view -> {
-            uploadSongInfoToFirebase();
-        });
+        buttonUpload.setOnClickListener(view -> uploadSongInfoToFirebase());
     }
 
     private void ViewBinding() {
@@ -142,11 +142,51 @@ public class UploadActivity extends AppCompatActivity {
         if (requestCode == PICK_AUDIO_REQUEST && resultCode == RESULT_OK
                 && data != null && data.getData() != null){
             AudioFilePath = data.getData();
-            imageViewUploadFileAudio.setImageResource(R.drawable.icons8_ok_128);
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                imageViewUploadFileAudio.setImageResource(R.drawable.icons8_ok_128);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void getAudioAndImageFromStorage(){
+    private void UploadAudioFileToFirestore(){
+        String songTitle = editTextSongTitleUpload.getText().toString();
+        if(AudioFilePath != null) {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            StorageReference ref = storageReference.child("Songs/"+ songTitle);
+            ref.putFile(AudioFilePath)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        progressDialog.dismiss();
+                        ref.getDownloadUrl().addOnCompleteListener(task -> {
+                            audioUrl = task.getResult().toString();
+                        });
+                        Toast.makeText(UploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(UploadActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        }
+                    });
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Vui lòng chọn lại bài hát", Toast.LENGTH_SHORT).show();
+            return;
+        }
+    }
+
+    private void UploadImageFileToFirestore(){
         String songTitle = editTextSongTitleUpload.getText().toString();
         if(ImageFilePath != null) {
             final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -157,55 +197,36 @@ public class UploadActivity extends AppCompatActivity {
             ref.putFile(ImageFilePath)
                     .addOnSuccessListener(taskSnapshot -> {
                         progressDialog.dismiss();
-
-                        //get image url
                         ref.getDownloadUrl().addOnCompleteListener(task -> {
-                            imageUrl = task.getResult().toString();
-//                                    Log.i("URL",profileImageUrl);
+                           imageUrl = task.getResult().toString();
                         });
-
                         Toast.makeText(UploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {
                         progressDialog.dismiss();
                         Toast.makeText(UploadActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        }
+            });
         }
         else {
             Toast.makeText(getApplicationContext(), "Vui lòng chọn lại ảnh", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if(AudioFilePath != null) {
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
 
-            StorageReference ref = storageReference.child("Songs/"+ songTitle);
-            ref.putFile(AudioFilePath)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        progressDialog.dismiss();
-
-                        //get audio url
-                        ref.getDownloadUrl().addOnCompleteListener(task -> {
-                            audioUrl = task.getResult().toString();
-//                                    Log.i("URL",audioUrl);
-                        });
-
-                        Toast.makeText(UploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        progressDialog.dismiss();
-                        Toast.makeText(UploadActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        }
-        else {
-            Toast.makeText(getApplicationContext(), "Vui lòng chọn lại bài hát", Toast.LENGTH_SHORT).show();
-            return;
-        }
     }
 
     private void uploadSongInfoToFirebase() {
+
+        UploadAudioFileToFirestore();
+        UploadImageFileToFirestore();
 
         String songTitle = editTextSongTitleUpload.getText().toString();
         List<ArtistModel> artistList = new ArrayList<>();
@@ -254,7 +275,6 @@ public class UploadActivity extends AppCompatActivity {
             countryList.add(countryModel);
         }
 
-
         List<String> preparedArtist = new ArrayList<>();
         for (ArtistModel x : artistList){
             preparedArtist.add(x.getName());
@@ -276,6 +296,7 @@ public class UploadActivity extends AppCompatActivity {
             audioUrl = task.getResult().toString();
             imageRef.getDownloadUrl().addOnCompleteListener(task1 -> {
                 imageUrl = task1.getResult().toString();
+
                 SongModel songModel = new SongModel(songTitle, audioUrl, imageUrl, preparedArtist, preparedCountry, preparedGenre);
                 final ProgressDialog progressDialog = new ProgressDialog(this);
                 progressDialog.setTitle("Uploading...");
@@ -293,7 +314,7 @@ public class UploadActivity extends AppCompatActivity {
         //                db.collection("Artist").document().set(artistList);
 //                db.collection("Genre").document().set(genreList);
 //                db.collection("Country").document().set(countryList);
-        ContributorModel contributorModel = new ContributorModel(songTitle, auth.getUid(), auth.getCurrentUser().getEmail());
-        db.collection("Contributor").document().set(contributorModel);
+//        ContributorModel contributorModel = new ContributorModel(songTitle, auth.getUid(), auth.getCurrentUser().getEmail());
+//        db.collection("Contributor").document().set(contributorModel);
     }
 }

@@ -21,7 +21,7 @@
         android:title="@string/title_search" />
 
     <item
-        android:id="@+id/navigation_user"
+        android:id="@+id/navigation_upload"
         android:icon="@drawable/icons8_user_64"
-        android:title="@string/title_user" />
+        android:title="@string/title_upload" />
 </menu>
