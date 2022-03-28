@@ -91,7 +91,7 @@ public class ListSongActivity extends AppCompatActivity {
     }
 
     private void LoadAllReceivedSongFromCountry(String countryTitle) {
-        db.collection("Song").whereEqualTo("country", countryTitle).get().addOnCompleteListener(task -> {
+        db.collection("Song").whereArrayContains("country", countryTitle).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()){
                 for (QueryDocumentSnapshot doc : task.getResult()){
                     SongModel songModel = doc.toObject(SongModel.class);
@@ -103,7 +103,7 @@ public class ListSongActivity extends AppCompatActivity {
     }
 
     private void LoadAllReceivedSongFromGenre(String genreTitle) {
-        db.collection("Song").whereEqualTo("genre", genreTitle).get().addOnCompleteListener(task -> {
+        db.collection("Song").whereArrayContains("genre", genreTitle).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()){
                 for (QueryDocumentSnapshot doc : task.getResult()){
                     SongModel songModel = doc.toObject(SongModel.class);

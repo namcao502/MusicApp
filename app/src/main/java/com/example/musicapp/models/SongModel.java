@@ -9,6 +9,33 @@ public class SongModel implements Serializable {
     private String url;
     private String img_url;
     private List<String> artist;
+    private List<String> country;
+    private List<String> genre;
+
+    public SongModel(String title, String url, String img_url, List<String> artist, List<String> country, List<String> genre) {
+        this.title = title;
+        this.url = url;
+        this.img_url = img_url;
+        this.artist = artist;
+        this.country = country;
+        this.genre = genre;
+    }
+
+    public List<String> getCountry() {
+        return country;
+    }
+
+    public void setCountry(List<String> country) {
+        this.country = country;
+    }
+
+    public List<String> getGenre() {
+        return genre;
+    }
+
+    public void setGenre(List<String> genre) {
+        this.genre = genre;
+    }
 
     public SongModel() {
     }

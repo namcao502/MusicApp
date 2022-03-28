@@ -86,8 +86,6 @@ public class FindFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-
-
         buttonFind.setOnClickListener(view1 -> {
             String keyword = editTextFind.getText().toString();
             if (keyword.isEmpty()){
