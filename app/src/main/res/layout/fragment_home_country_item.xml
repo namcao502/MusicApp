@@ -24,13 +24,16 @@
 
 
         <TextView
+
+
+
             app:layout_constraintTop_toBottomOf="@id/imageViewCountryItem"
             android:textAlignment="center"
             android:id="@+id/textViewCountryItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:text="Product Name"
+            android:text="Country Name"
             android:textSize="17sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"

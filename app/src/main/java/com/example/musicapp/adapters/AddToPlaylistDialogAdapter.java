@@ -61,7 +61,8 @@ public class AddToPlaylistDialogAdapter extends RecyclerView.Adapter<AddToPlayli
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
         holder.textView.setText(list.get(position).getTitle());
-        Log.i("TAG1", "onBindViewHolder: " + list.get(position).getTitle());
+        holder.textView.setSelected(true);
+        //Log.i("TAG1", "onBindViewHolder: " + list.get(position).getTitle());
         holder.itemView.setOnClickListener(view -> {
 
             //get all song already in playlist

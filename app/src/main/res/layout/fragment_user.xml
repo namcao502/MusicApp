@@ -8,9 +8,13 @@
 
     <!-- TODO: Update blank fragment layout -->
     <Button
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         android:text="Bấm vào đây để đóng góp bài hát"
         android:layout_gravity="center"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/buttonUp"/>
 

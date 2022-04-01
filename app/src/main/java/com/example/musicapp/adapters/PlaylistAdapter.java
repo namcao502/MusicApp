@@ -54,6 +54,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.textView.setText(list.get(position).getTitle());
 
+        holder.textView.setSelected(true);
+
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(context, ListSongActivity.class);
             intent.putExtra(Variables.PLAYLIST_OBJECT, (Serializable) list.get(position).getSong());

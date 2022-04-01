@@ -353,14 +353,11 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
         reference = storageReference.child( "Songs/"+ songTitle + ".mp3");
 
-        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                String url = uri.toString();
-                DownloadFile(SimplePlayerActivity.this, songTitle, "mp3", DIRECTORY_DOWNLOADS, url);
-                Toast.makeText(SimplePlayerActivity.this, "Đang tải về", Toast.LENGTH_SHORT).show();
-                pd.dismiss();
-            }
+        reference.getDownloadUrl().addOnSuccessListener(uri -> {
+            String url = uri.toString();
+            DownloadFile(SimplePlayerActivity.this, songTitle, "mp3", DIRECTORY_DOWNLOADS, url);
+            Toast.makeText(SimplePlayerActivity.this, "Đang tải về", Toast.LENGTH_SHORT).show();
+            pd.dismiss();
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -417,7 +414,9 @@ public class SimplePlayerActivity extends AppCompatActivity {
         textViewStart = findViewById(R.id.textViewStart);
         textViewEnd = findViewById(R.id.textViewEnd);
         textViewTitle = findViewById(R.id.textViewTitlePlayer);
+        textViewTitle.setSelected(true);
         textViewArtist = findViewById(R.id.textViewArtistPlayer);
+        textViewArtist.setSelected(true);
 
         seekBar = findViewById(R.id.seekBar);
         seekBarVolume = findViewById(R.id.seekBarVolume);

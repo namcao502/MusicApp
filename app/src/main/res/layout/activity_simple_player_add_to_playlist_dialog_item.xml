@@ -28,6 +28,13 @@
             app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:clickable="true"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
                 android:id="@+id/textViewTitleAddToPlaylistDialogItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -60,12 +60,17 @@ public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ViewHo
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_list_song_item, parent, false));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
         Glide.with(context).load(songModelList.get(position).getImg_url()).into(holder.imageView);
 
         holder.textViewTitle.setText(songModelList.get(position).getTitle());
+
+        holder.textViewTitle.setSelected(true);
+
+        holder.textViewArtist.setSelected(true);
 
         int artistListLength = songModelList.get(position).getArtist().size();
 
@@ -95,37 +100,35 @@ public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ViewHo
             context.startActivity(intent);
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
+        holder.itemView.setOnLongClickListener(view -> {
 
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getRootView().getContext());
-                alertDialog.setIcon(R.drawable.icons8_delete_dialog_96);
-                alertDialog.setTitle("Có chắc muốn xoá chứ?");
-                alertDialog.setCancelable(false);
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getRootView().getContext());
+            alertDialog.setIcon(R.drawable.icons8_delete_dialog_96);
+            alertDialog.setTitle("Có chắc muốn xoá chứ?");
+            alertDialog.setCancelable(false);
 
-                alertDialog.setPositiveButton("Xoá", (dialogInterface, i) -> {
+            alertDialog.setPositiveButton("Xoá", (dialogInterface, i) -> {
 
-                    String playlistID = intent.getStringExtra(Variables.PLAYLIST_ID);
-                    String playlistTitle = intent.getStringExtra(Variables.PLAYLIST_TITLE);
+                String playlistID = intent.getStringExtra(Variables.PLAYLIST_ID);
+                String playlistTitle = intent.getStringExtra(Variables.PLAYLIST_TITLE);
 
-                    //get all song already in playlist
-                    final List<String>[] songTitleFirst = new List[]{new ArrayList<>()};
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    FirebaseAuth auth = FirebaseAuth.getInstance();
-                    DocumentReference documentReference = db.collection("Playlist")
-                            .document(auth.getCurrentUser().getUid()).collection("User").document(playlistID);
-                    documentReference.get().addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.get("song") != null){
-                            PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
-                            songTitleFirst[0] = playlistModel.getSong();
-                            //add this row song to that list
-                            List<String> songTitle = new ArrayList<>();
-                            if (songTitleFirst[0] != null){
-                                for (String x : songTitleFirst[0]){
-                                    songTitle.add(x);
-                                }
+                //get all song already in playlist
+                final List<String>[] songTitleFirst = new List[]{new ArrayList<>()};
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+                DocumentReference documentReference = db.collection("Playlist")
+                        .document(auth.getCurrentUser().getUid()).collection("User").document(playlistID);
+                documentReference.get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.get("song") != null){
+                        PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
+                        songTitleFirst[0] = playlistModel.getSong();
+                        //add this row song to that list
+                        List<String> songTitle = new ArrayList<>();
+                        if (songTitleFirst[0] != null){
+                            for (String x : songTitleFirst[0]){
+                                songTitle.add(x);
                             }
+                        }
 
 //                                    if (songTitle != null){
 //                                        for (String x : songTitle){
@@ -134,30 +137,29 @@ public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ViewHo
 //                                            }
 //                                        }
 //                                    }
-                            songTitle.removeIf((String x) -> x.equals(songModelList.get(position).getTitle()));
+                        songTitle.removeIf((String x) -> x.equals(songModelList.get(position).getTitle()));
 
-                            documentReference.delete();
-                            //update
-                            playlistModel = new PlaylistModel(playlistTitle, songTitle);
-                            playlistModel.setId(playlistID);
+                        documentReference.delete();
+                        //update
+                        playlistModel = new PlaylistModel(playlistTitle, songTitle);
+                        playlistModel.setId(playlistID);
 //                            Log.i("TAG1", "onClick2: " + playlistModel);
-                            db.collection("Playlist").document(auth.getUid())
-                                    .collection("User").document(playlistID).set(playlistModel).addOnCompleteListener(task -> Toast.makeText(context, "Xoá thành công", Toast.LENGTH_SHORT).show()).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(context, "Xoá thất bại", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                        db.collection("Playlist").document(auth.getUid())
+                                .collection("User").document(playlistID).set(playlistModel).addOnCompleteListener(task -> Toast.makeText(context, "Xoá thành công", Toast.LENGTH_SHORT).show()).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(context, "Xoá thất bại", Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
-                        }
-                    });
+                    }
                 });
-                alertDialog.setNegativeButton("Không xoá nữa", (dialogInterface, i) -> {
+            });
+            alertDialog.setNegativeButton("Không xoá nữa", (dialogInterface, i) -> {
 
-                });
-                alertDialog.show();
-                return false;
-            }
+            });
+            alertDialog.show();
+            return false;
         });
     }
 

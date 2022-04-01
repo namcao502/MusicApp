@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,6 +41,8 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ViewHolder
 
         Glide.with(context).load(list.get(position).getImg_url()).into(holder.imageView);
         holder.textView.setText(list.get(position).getName());
+
+        holder.textView.setSelected(true);
 
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(context, ListSongActivity.class);

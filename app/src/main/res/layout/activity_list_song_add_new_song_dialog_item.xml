@@ -35,6 +35,11 @@
             android:orientation="vertical">
 
             <TextView
+                android:textIsSelectable="true"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
                 android:id="@+id/textViewTitleAddNewSongDialogItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

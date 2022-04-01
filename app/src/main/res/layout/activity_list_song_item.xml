@@ -36,6 +36,14 @@
             android:orientation="vertical">
 
             <TextView
+                android:clickable="true"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+
                 android:id="@+id/textViewTitleListSongItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -49,6 +57,14 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
+                android:clickable="true"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+
                 android:id="@+id/textViewArtistListSongItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
