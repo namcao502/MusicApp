@@ -32,7 +32,7 @@
         android:drawableLeft="@drawable/ic_baseline_account_circle"
         android:drawablePadding="15dp"
         android:ems="10"
-        android:hint="Email"
+        android:hint="email@gmail.com"
         android:inputType="textPersonName"
         android:padding="15dp"
         android:textColor="@color/pink"

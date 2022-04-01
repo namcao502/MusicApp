@@ -19,9 +19,9 @@ public class FirstTimeSliderAdapter extends PagerAdapter {
     LayoutInflater layoutInflater;
 
     int imageArray[] = {
-            R.drawable.onboardscreen1,
-            R.drawable.onboardscreen2,
-            R.drawable.onboardscreen3
+            R.drawable.slide1,
+            R.drawable.slide2,
+            R.drawable.slide3
 
     };
 
@@ -32,9 +32,9 @@ public class FirstTimeSliderAdapter extends PagerAdapter {
     };
 
     int descriptionArray[] = {
-            R.string.description,
-            R.string.description,
-            R.string.description
+            R.string.description1,
+            R.string.description2,
+            R.string.description3
     };
 
     public FirstTimeSliderAdapter(Context context) {

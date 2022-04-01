@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">MusicApp</string>
-    <string name="first_slide">Slide 1</string>
-    <string name="second_slide">Slide 2</string>
-    <string name="third_slide">Slide 3</string>
-    <string name="description">Description</string>
+    <string name="first_slide">Âm nhạc là ma thuật đấy</string>
+    <string name="second_slide">Đắm chìm vào những giai điệu nhé</string>
+    <string name="third_slide">Chào mừng đến với thế giới của Walkers</string>
+    <string name="description1">Bạn định nghĩa được âm nhạc chứ?</string>
+    <string name="description2">Bạn đã từng tham gia vào buổi hoà nhạc chưa?</string>
+    <string name="description3">Đón xem những tuyệt phẩm từ Walkers nhé</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_home">Trang chủ</string>
