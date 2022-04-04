@@ -2,32 +2,32 @@ package com.example.musicapp.activities;
 
 import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Dialog;
 import android.app.DownloadManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
@@ -37,22 +37,15 @@ import com.example.musicapp.adapters.CommentAdapter;
 import com.example.musicapp.models.CommentModel;
 import com.example.musicapp.models.PlaylistModel;
 import com.example.musicapp.models.SongModel;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.example.musicapp.services.CreateNotification;
+import com.example.musicapp.services.OnClearFromRecentService;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,6 +71,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
     List<CommentModel> commentModelList;
     CommentAdapter commentAdapter;
 
+    NotificationManager notificationManager;
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -85,11 +80,112 @@ public class SimplePlayerActivity extends AppCompatActivity {
         imageViewPlay.setImageResource(R.drawable.icons8_play_64);
     }
 
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getExtras().getString("actionName");
+
+            switch (action){
+                case CreateNotification.ACTION_PREVIOUS:
+                    Previous();
+                    break;
+                case CreateNotification.ACTION_PLAY:
+                    if (mediaPlayer.isPlaying()){
+                        Pause();
+                    }
+                    else {
+                        Play();
+                    }
+                    break;
+                case CreateNotification.ACTION_NEXT:
+                    Next();
+                    break;
+            }
+        }
+    };
+
+    private void Play(){
+        mediaPlayer.start();
+        imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+        SetTime();
+        UpdateProgress();
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+    }
+
+    private void Pause(){
+        mediaPlayer.pause();
+        imageViewPlay.setImageResource(R.drawable.icons8_play_64);
+        SetTime();
+        UpdateProgress();
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_play_arrow_black_24dp, songPosition, songModelList.size() - 1);
+    }
+
+    private void Previous() {
+        songPosition -= 1;
+        int maxLength = songModelList.size();
+        if (songPosition < 0){
+            songPosition = maxLength - 1;
+        }
+        if (mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            try {
+                CreateMediaPlayer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mediaPlayer.start();
+            imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+        }
+        else {
+            try {
+                CreateMediaPlayer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        SetTime();
+        UpdateProgress();
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+    }
+
+    private void Next() {
+        songPosition += 1;
+        int maxLength = songModelList.size();
+        if (songPosition > maxLength - 1){
+            songPosition = 0;
+        }
+        if (mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            try {
+                CreateMediaPlayer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mediaPlayer.start();
+            imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+        }
+        else {
+            try {
+                CreateMediaPlayer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        SetTime();
+        UpdateProgress();
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_simple_player);
-        //getSupportActionBar().hide();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         Intent intent = getIntent();
@@ -97,6 +193,13 @@ public class SimplePlayerActivity extends AppCompatActivity {
         songPosition = intent.getIntExtra(Variables.POSITION, 0);
 
         ViewBinding();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CreateChannel();
+            registerReceiver(broadcastReceiver, new IntentFilter("TRACKS_TRACKS"));
+            startService(new Intent(getBaseContext(), OnClearFromRecentService.class));
+        }
+        
         try {
             CreateMediaPlayer();
         } catch (IOException e) {
@@ -105,6 +208,19 @@ public class SimplePlayerActivity extends AppCompatActivity {
         SetTime();
         UpdateProgress();
         Listener();
+    }
+
+    private void CreateChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(CreateNotification.CHANNEL_ID,
+                    "KOD Dev", NotificationManager.IMPORTANCE_LOW);
+
+            notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null){
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
     }
 
     private void Listener() {
@@ -185,72 +301,20 @@ public class SimplePlayerActivity extends AppCompatActivity {
         });
 
         imageViewNext.setOnClickListener(view -> {
-            songPosition += 1;
-            int maxLength = songModelList.size();
-            if (songPosition > maxLength - 1){
-                songPosition = 0;
-            }
-            if (mediaPlayer.isPlaying()){
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                try {
-                    CreateMediaPlayer();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                mediaPlayer.start();
-                imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
-            }
-            else {
-                try {
-                    CreateMediaPlayer();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            SetTime();
-            UpdateProgress();
+            Next();
         });
 
         imageViewPrevious.setOnClickListener(view -> {
-            songPosition -= 1;
-            int maxLength = songModelList.size();
-            if (songPosition < 0){
-                songPosition = maxLength - 1;
-            }
-            if (mediaPlayer.isPlaying()){
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                try {
-                    CreateMediaPlayer();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                mediaPlayer.start();
-                imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
-            }
-            else {
-                try {
-                    CreateMediaPlayer();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            SetTime();
-            UpdateProgress();
+            Previous();
         });
 
         imageViewPlay.setOnClickListener(view -> {
             if (mediaPlayer.isPlaying()){
-                mediaPlayer.pause();
-                imageViewPlay.setImageResource(R.drawable.icons8_play_64);
+                Pause();
             }
             else {
-                mediaPlayer.start();
-                imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+                Play();
             }
-            SetTime();
-            UpdateProgress();
         });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -489,5 +553,15 @@ public class SimplePlayerActivity extends AppCompatActivity {
         }
         mediaPlayer.start();
         imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+    }
+
+    protected void onDestroy() {
+        super.onDestroy();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            notificationManager.cancelAll();
+        }
+        unregisterReceiver(broadcastReceiver);
     }
 }

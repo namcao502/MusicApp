@@ -41,6 +41,10 @@
         <activity
             android:name=".activities.MainActivity"
             android:exported="true" />
+
+        <receiver android:name=".services.NotificationActionService"/>
+        <service android:name=".services.OnClearFromRecentService"/>
+
     </application>
 
 </manifest>
