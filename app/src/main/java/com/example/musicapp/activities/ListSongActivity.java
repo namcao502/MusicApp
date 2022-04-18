@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +29,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ListSongActivity extends AppCompatActivity {
 
@@ -59,7 +61,7 @@ public class ListSongActivity extends AppCompatActivity {
         LoadToolbar();
 
         if (GetDataFromIntent().equals("playlistIntent")){
-            LoadAllReceivedSongFromPlaylist((List<String>) intent.getSerializableExtra(Variables.PLAYLIST_OBJECT));
+            LoadAllSongFromPlaylist((List<String>) intent.getSerializableExtra("LIST_SONG_ID"));
         }
 
         if (GetDataFromIntent().equals("artistIntent")){
@@ -81,6 +83,7 @@ public class ListSongActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void LoadAllReceivedSongFromCountry(String countryTitle) {
         db.collection("Song").whereArrayContains("country", countryTitle).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()){
@@ -93,6 +96,7 @@ public class ListSongActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void LoadAllReceivedSongFromGenre(String genreTitle) {
         db.collection("Song").whereArrayContains("genre", genreTitle).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()){
@@ -105,6 +109,7 @@ public class ListSongActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void LoadAllReceivedSongFromArtist(String artistTitle) {
         db.collection("Song").whereArrayContains("artist", artistTitle).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()){
@@ -131,98 +136,88 @@ public class ListSongActivity extends AppCompatActivity {
 
         recyclerViewListSong.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         songModelList = new ArrayList<>();
-        listSongAdapter = new ListSongAdapter(getApplicationContext(), songModelList, intent);
+        listSongAdapter = new ListSongAdapter(getApplicationContext(), songModelList, getIntent());
         recyclerViewListSong.setAdapter(listSongAdapter);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void LoadToolbar() {
         //toolbar
 
-        toolbar.setTitle("");
+        toolbar.setTitle("Danh sách bài hát");
         setSupportActionBar(toolbar);
 
         toolbar.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
 
-                case R.id.playlist_menu_add:
+            if (item.getItemId() == R.id.playlist_menu_add) {
+                Dialog dialog = new Dialog(ListSongActivity.this);
+                dialog.setContentView(R.layout.activity_list_song_add_new_song_dialog);
 
-                    Dialog dialog = new Dialog(ListSongActivity.this);
-                    dialog.setContentView(R.layout.activity_list_song_add_new_song_dialog);
+                RecyclerView recyclerViewAddNewSongDialog = dialog.findViewById(R.id.recyclerView_list_song_dialog);
+                Button buttonAddAll = dialog.findViewById(R.id.buttonAddNewListDialogAddAll);
 
-                    RecyclerView recyclerViewAddNewSongDialog = dialog.findViewById(R.id.recyclerView_list_song_dialog);
-                    Button buttonAddAll = dialog.findViewById(R.id.buttonAddNewListDialogAddAll);
+                recyclerViewAddNewSongDialog.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                List<SongModel> songModelListTemp = new ArrayList<>();
+                ListSongDialogAdapter listSongDialogAdapter = new ListSongDialogAdapter(getApplicationContext(), songModelListTemp, intent);
+                recyclerViewAddNewSongDialog.setAdapter(listSongDialogAdapter);
 
-                    recyclerViewAddNewSongDialog.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                    List<SongModel> songModelListTemp = new ArrayList<>();
-                    ListSongDialogAdapter listSongDialogAdapter = new ListSongDialogAdapter(getApplicationContext(), songModelListTemp, intent);
-                    recyclerViewAddNewSongDialog.setAdapter(listSongDialogAdapter);
+                //load all song in db for picking
+                db.collection("Song").get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            SongModel songModel = doc.toObject(SongModel.class);
+                            songModelListTemp.add(songModel);
+                        }
+                        listSongDialogAdapter.notifyDataSetChanged();
+                    }
+                });
 
-                    db.collection("Song").get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()){
-                            for (QueryDocumentSnapshot doc : task.getResult()){
-                                SongModel songModel = doc.toObject(SongModel.class);
-                                songModelListTemp.add(songModel);
-                            }
-                            listSongDialogAdapter.notifyDataSetChanged();
+                buttonAddAll.setOnClickListener(view -> {
+                    //get playlist title, playlist id from intent
+                    String playlistID = intent.getStringExtra(Variables.PLAYLIST_ID);
+
+                    //get song_id that already in playlist
+                    final List<String>[] songIdFirst = new List[]{new ArrayList<>()};
+
+                    DocumentReference documentReference = db.collection("Playlist")
+                            .document(auth.getCurrentUser().getUid()).collection("User").document(playlistID);
+                    documentReference.get().addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.get("song_id") != null) {
+                            PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
+                            songIdFirst[0] = playlistModel.getSong_id();
                         }
                     });
 
-                    buttonAddAll.setOnClickListener(view -> {
-                        //get playlist title from intent
-                        String playlistID = intent.getStringExtra(Variables.PLAYLIST_ID);
-                        String playlistTitle = intent.getStringExtra(Variables.PLAYLIST_TITLE);
-                        //get song that already in playlist
-                        final List<String>[] songTitleFirst = new List[]{new ArrayList<>()};
-
-                        DocumentReference documentReference = db.collection("Playlist")
-                                .document(auth.getCurrentUser().getUid()).collection("User").document(playlistID);
-                        documentReference.get().addOnSuccessListener(documentSnapshot -> {
-                            if (documentSnapshot.get("song") != null){
-                                PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
-                                songTitleFirst[0] = playlistModel.getSong();
-                            }
-                        });
-
-                        documentReference.delete();
-
-                        //get all song title in db
-                        List<String> songTitle = new ArrayList<>();
-                        for (SongModel x : songModelListTemp){
-                            songTitle.add(x.getTitle());
+                    if (songModelListTemp != null){
+                        for (SongModel x : songModelListTemp) {
+                            songIdFirst[0].add(x.getId());
                         }
-                        if (songTitleFirst[0] != null){
-                            for (String x : songTitleFirst[0]){
-                                songTitle.add(x);
-                            }
-                        }
+                    }
 
-                        PlaylistModel playlistModel = new PlaylistModel(playlistTitle, songTitle);
-                        playlistModel.setId(playlistID);
-                        db.collection("Playlist").document(auth.getUid())
-                                .collection("User").document(playlistID).set(playlistModel).addOnCompleteListener(task -> {
-                                    Toast.makeText(ListSongActivity.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss();
-                                }).addOnFailureListener(e -> {
-                                    Toast.makeText(ListSongActivity.this, "Thêm thất bại", Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss();
-                                });
-
+                    db.collection("Playlist").document(Objects.requireNonNull(auth.getUid()))
+                            .collection("User").document(playlistID).update("song_id", songIdFirst[0]).addOnCompleteListener(task -> {
+                        Toast.makeText(ListSongActivity.this, "Thêm tất cả bài hát thành công", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(ListSongActivity.this, "Thêm tất cả bài hát thất bại", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
                     });
 
-                    dialog.show();
+                });
 
-                    return true;
+                dialog.show();
             }
             return true;
         });
     }
-    private void LoadAllReceivedSongFromPlaylist(List<String> songTitleList) {
+    @SuppressLint("NotifyDataSetChanged")
+    private void LoadAllSongFromPlaylist(List<String> songIdList) {
 
         //get data from song collection
-        if (songTitleList != null){
-            for (String x : songTitleList){
+        if (songIdList != null){
+            for (String x : songIdList){
                 db.collection("Song")
-                        .whereEqualTo("title", x).get().addOnCompleteListener(task -> {
+                        .whereEqualTo("id", x).get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()){
                         for (QueryDocumentSnapshot doc : task.getResult()){
                             SongModel songModel = doc.toObject(SongModel.class);

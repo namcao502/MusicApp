@@ -22,8 +22,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //getSupportActionBar().hide();
-
         loadFragment(new HomeFragment());
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
@@ -46,13 +44,14 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(new UserFragment());
                     return true;
             }
-
             return false;
         });
     }
     private void loadFragment(Fragment homeFragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_container, homeFragment);
+        transaction.addToBackStack(homeFragment.getClass().getSimpleName());
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
     }
 }

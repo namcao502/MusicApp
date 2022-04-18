@@ -53,7 +53,6 @@ public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ViewHo
         this.intent = intent;
     }
 
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -73,8 +72,6 @@ public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ViewHo
         holder.textViewArtist.setSelected(true);
 
         int artistListLength = songModelList.get(position).getArtist().size();
-
-//        Log.i("TAG1", "onBindViewHolder: " + artistListLength + "   ----   " + songModelList.get(position).getTitle());
 
         String artistText = "";
 
@@ -113,37 +110,24 @@ public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ViewHo
                 String playlistTitle = intent.getStringExtra(Variables.PLAYLIST_TITLE);
 
                 //get all song already in playlist
-                final List<String>[] songTitleFirst = new List[]{new ArrayList<>()};
+                final List<String>[] songIdFirst = new List[]{new ArrayList<>()};
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 FirebaseAuth auth = FirebaseAuth.getInstance();
+
                 DocumentReference documentReference = db.collection("Playlist")
                         .document(auth.getCurrentUser().getUid()).collection("User").document(playlistID);
+
                 documentReference.get().addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.get("song") != null){
+                    if (documentSnapshot.get("song_id") != null){
                         PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
-                        songTitleFirst[0] = playlistModel.getSong();
+                        songIdFirst[0] = playlistModel.getSong_id();
+
                         //add this row song to that list
-                        List<String> songTitle = new ArrayList<>();
-                        if (songTitleFirst[0] != null){
-                            for (String x : songTitleFirst[0]){
-                                songTitle.add(x);
-                            }
-                        }
+                        songIdFirst[0].removeIf((String x) -> x.equals(songModelList.get(position).getId()));
 
-//                                    if (songTitle != null){
-//                                        for (String x : songTitle){
-//                                            if (x.equals(songModelList.get(position).getTitle())){
-//                                                songTitle.remove(x);
-//                                            }
-//                                        }
-//                                    }
-                        songTitle.removeIf((String x) -> x.equals(songModelList.get(position).getTitle()));
-
-                        documentReference.delete();
                         //update
-                        playlistModel = new PlaylistModel(playlistTitle, songTitle);
-                        playlistModel.setId(playlistID);
-//                            Log.i("TAG1", "onClick2: " + playlistModel);
+                        playlistModel = new PlaylistModel(playlistTitle, songIdFirst[0], playlistID);
+
                         db.collection("Playlist").document(auth.getUid())
                                 .collection("User").document(playlistID).set(playlistModel).addOnCompleteListener(task -> Toast.makeText(context, "Xoá thành công", Toast.LENGTH_SHORT).show()).addOnFailureListener(new OnFailureListener() {
                             @Override

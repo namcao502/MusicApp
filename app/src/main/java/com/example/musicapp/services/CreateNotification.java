@@ -22,7 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class CreateNotification {
-    public static final String CHANNEL_ID = "channel1";
+    public static final String CHANNEL_ID = "channel";
 
     public static final String ACTION_PREVIOUS = "actionPrevious";
     public static final String ACTION_PLAY = "actionPlay";
@@ -53,19 +53,13 @@ public class CreateNotification {
             MediaSessionCompat mediaSessionCompat = new MediaSessionCompat( context, "tag");
 
             final Bitmap[] bitmap = {null};
-            Thread thread = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try  {
-                        //Your code goes here
-                        bitmap[0] = getBitmapFromURL(songModel.getImg_url());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            Thread thread = new Thread(() -> {
+                try  {
+                    bitmap[0] = getBitmapFromURL(songModel.getImg_url());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
-
             thread.start();
 
             PendingIntent pendingIntentPrevious;

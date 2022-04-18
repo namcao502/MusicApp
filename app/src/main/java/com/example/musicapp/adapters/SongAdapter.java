@@ -67,7 +67,6 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(context, SimplePlayerActivity.class);
             intent.putExtra(Variables.LIST_SONG_MODEL_OBJECT, (Serializable) songModelList);
-//            Log.i("TAG1", "song adapter: ok" + songModelList);
             intent.putExtra(Variables.POSITION, position);
             context.startActivity(intent);
         });

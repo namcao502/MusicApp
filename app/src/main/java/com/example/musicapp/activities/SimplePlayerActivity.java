@@ -2,6 +2,7 @@ package com.example.musicapp.activities;
 
 import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.NotificationChannel;
@@ -73,12 +74,12 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
     NotificationManager notificationManager;
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mediaPlayer.pause();
-        imageViewPlay.setImageResource(R.drawable.icons8_play_64);
-    }
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        mediaPlayer.pause();
+//        imageViewPlay.setImageResource(R.drawable.icons8_play_64);
+//    }
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -213,9 +214,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
     private void CreateChannel() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel channel = new NotificationChannel(CreateNotification.CHANNEL_ID,
-                    "KOD Dev", NotificationManager.IMPORTANCE_LOW);
-
+            NotificationChannel channel = new NotificationChannel(CreateNotification.CHANNEL_ID, "MusicPlayer", NotificationManager.IMPORTANCE_HIGH);
             notificationManager = getSystemService(NotificationManager.class);
             if (notificationManager != null){
                 notificationManager.createNotificationChannel(channel);
@@ -223,6 +222,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void Listener() {
 
         buttonAddComment.setOnClickListener(view -> {
@@ -276,7 +276,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
 //            });
 
             List<PlaylistModel> playlistModelList = new ArrayList<>();
-            AddToPlaylistDialogAdapter addToPlaylistDialogAdapter = new AddToPlaylistDialogAdapter(SimplePlayerActivity.this, playlistModelList, songModelList.get(songPosition).getTitle());
+            AddToPlaylistDialogAdapter addToPlaylistDialogAdapter = new AddToPlaylistDialogAdapter(SimplePlayerActivity.this, playlistModelList, songModelList.get(songPosition).getId());
             RecyclerView recyclerViewAddToPlaylist = dialog.findViewById(R.id.recyclerView_add_to_playlist_dialog);
             recyclerViewAddToPlaylist.setLayoutManager(new LinearLayoutManager(SimplePlayerActivity.this));
             recyclerViewAddToPlaylist.setAdapter(addToPlaylistDialogAdapter);
@@ -288,7 +288,6 @@ public class SimplePlayerActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot doc : task.getResult()){
                                 PlaylistModel playlistModel = doc.toObject(PlaylistModel.class);
                                 playlistModelList.add(playlistModel);
-    //                            Log.i("TAG1", "simple player activity: " + playlistModel);
                             }
                             addToPlaylistDialogAdapter.notifyDataSetChanged();
                             dialog.show();
@@ -422,12 +421,9 @@ public class SimplePlayerActivity extends AppCompatActivity {
             DownloadFile(SimplePlayerActivity.this, songTitle, "mp3", DIRECTORY_DOWNLOADS, url);
             Toast.makeText(SimplePlayerActivity.this, "Đang tải về", Toast.LENGTH_SHORT).show();
             pd.dismiss();
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(SimplePlayerActivity.this, "Không tải được", Toast.LENGTH_LONG).show();
-                pd.dismiss();
-            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(SimplePlayerActivity.this, "Không tải được", Toast.LENGTH_LONG).show();
+            pd.dismiss();
         });
     }
 
@@ -533,6 +529,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         Glide.with(getApplicationContext()).load(songModelList.get(songPosition).getImg_url()).into(imageView);
         textViewTitle.setText(songModelList.get(songPosition).getTitle());
         int artistListLength = songModelList.get(songPosition).getArtist().size();
+
         String artistText = "";
         for (int i=0; i<artistListLength; i++){
             if (i == artistListLength - 1){
@@ -542,6 +539,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
                 artistText += songModelList.get(songPosition).getArtist().get(i) + ", ";
             }
         }
+
         textViewArtist.setText(artistText);
 
         mediaPlayer = new MediaPlayer();
@@ -557,11 +555,12 @@ public class SimplePlayerActivity extends AppCompatActivity {
                 R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
     }
 
+
     protected void onDestroy() {
         super.onDestroy();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            notificationManager.cancelAll();
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//            notificationManager.cancelAll();
+//        }
         unregisterReceiver(broadcastReceiver);
     }
 }

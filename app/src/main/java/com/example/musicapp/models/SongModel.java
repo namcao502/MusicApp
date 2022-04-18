@@ -5,6 +5,7 @@ import java.util.List;
 
 public class SongModel implements Serializable {
 
+    private String id;
     private String title;
     private String url;
     private String img_url;
@@ -13,6 +14,16 @@ public class SongModel implements Serializable {
     private List<String> genre;
 
     public SongModel(String title, String url, String img_url, List<String> artist, List<String> country, List<String> genre) {
+        this.title = title;
+        this.url = url;
+        this.img_url = img_url;
+        this.artist = artist;
+        this.country = country;
+        this.genre = genre;
+    }
+
+    public SongModel(String id, String title, String url, String img_url, List<String> artist, List<String> country, List<String> genre) {
+        this.id = id;
         this.title = title;
         this.url = url;
         this.img_url = img_url;
@@ -38,13 +49,6 @@ public class SongModel implements Serializable {
     }
 
     public SongModel() {
-    }
-
-    public SongModel(String title, String url, String img_url, List<String> artist) {
-        this.title = title;
-        this.url = url;
-        this.img_url = img_url;
-        artist = artist;
     }
 
     public String getTitle() {
@@ -79,13 +83,24 @@ public class SongModel implements Serializable {
         this.artist = artist;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "SongModel{" +
-                "title='" + title + '\'' +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
                 ", url='" + url + '\'' +
                 ", img_url='" + img_url + '\'' +
-                ", Artist=" + artist +
+                ", artist=" + artist +
+                ", country=" + country +
+                ", genre=" + genre +
                 '}';
     }
 }

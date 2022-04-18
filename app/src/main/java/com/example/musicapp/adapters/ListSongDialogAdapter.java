@@ -38,11 +38,6 @@ public class ListSongDialogAdapter extends RecyclerView.Adapter<ListSongDialogAd
         this.intent = intent;
     }
 
-    public ListSongDialogAdapter(Context context, List<SongModel> songModelList) {
-        this.context = context;
-        this.songModelList = songModelList;
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -74,45 +69,49 @@ public class ListSongDialogAdapter extends RecyclerView.Adapter<ListSongDialogAd
         else
             holder.textViewArtist.setText(artistText);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String playlistID = intent.getStringExtra(Variables.PLAYLIST_ID);
-                String playlistTitle = intent.getStringExtra(Variables.PLAYLIST_TITLE);
-                Log.i("TAG1", "onClick: " + playlistID + "  ---   " + playlistTitle);
-                //get all song already in playlist
-                final List<String>[] songTitleFirst = new List[]{new ArrayList<>()};
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-                DocumentReference documentReference = db.collection("Playlist")
-                        .document(auth.getCurrentUser().getUid()).collection("User").document(playlistID);
-                documentReference.get().addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.get("song") != null){
-                        PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
-                        songTitleFirst[0] = playlistModel.getSong();
-//                            Log.i("TAG1", "onClick: " + documentSnapshot.getClass());
+        holder.itemView.setOnClickListener(view -> {
 
-                        //add this row song to that list
-                        List<String> songTitle = new ArrayList<>();
-                        if (songTitleFirst[0] != null){
-                            for (String x : songTitleFirst[0]){
-                                songTitle.add(x);
-                            }
+            String playlistID = intent.getStringExtra(Variables.PLAYLIST_ID);
+            String playlistTitle = intent.getStringExtra(Variables.PLAYLIST_TITLE);
+
+//                Log.i("TAG1", "onClick: " + playlistID + "  ---   " + playlistTitle);
+            //get all song already in playlist
+            final List<String>[] songIdFirst = new List[]{new ArrayList<>()};
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+
+            DocumentReference documentReference = db.collection("Playlist")
+                    .document(auth.getCurrentUser().getUid()).collection("User").document(playlistID);
+
+            documentReference.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.get("song_id") != null){
+
+                    PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
+                    songIdFirst[0] = playlistModel.getSong_id();
+
+                    //add this row song to that list
+                    List<String> songId = new ArrayList<>();
+                    if (songIdFirst[0] != null){
+                        for (String x : songIdFirst[0]){
+                            songId.add(x);
                         }
-                        songTitle.add(songModelList.get(position).getTitle());
-                        documentReference.delete();
-                        //update
-                        playlistModel = new PlaylistModel(playlistTitle, songTitle);
-                        playlistModel.setId(playlistID);
-//                            Log.i("TAG1", "onClick2: " + playlistModel);
-                        db.collection("Playlist").document(auth.getUid())
-                                .collection("User").document(playlistID).set(playlistModel).addOnCompleteListener(task -> Toast.makeText(context, "Thêm " + songModelList.get(position).getTitle() + " thành công", Toast.LENGTH_SHORT).show())
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(context, "Thêm thất bại", Toast.LENGTH_SHORT).show());
-
                     }
-                });
-            }
+                    songId.add(songModelList.get(position).getId());
+
+                    documentReference.delete();
+
+                    //update
+                    playlistModel = new PlaylistModel(playlistTitle, songId);
+                    playlistModel.setId(playlistID);
+                    db.collection("Playlist").document(auth.getUid())
+                            .collection("User").document(playlistID).set(playlistModel)
+                            .addOnCompleteListener(task ->
+                                    Toast.makeText(context, "Thêm " + songModelList.get(position).getTitle() + " thành công", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(context, "Thêm thất bại", Toast.LENGTH_SHORT).show());
+
+                }
+            });
         });
     }
 

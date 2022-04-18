@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -297,7 +298,8 @@ public class UploadActivity extends AppCompatActivity {
             imageRef.getDownloadUrl().addOnCompleteListener(task1 -> {
                 imageUrl = task1.getResult().toString();
 
-                SongModel songModel = new SongModel(songTitle, audioUrl, imageUrl, preparedArtist, preparedCountry, preparedGenre);
+                //id
+                SongModel songModel = new SongModel(FieldPath.documentId().toString(), songTitle, audioUrl, imageUrl, preparedArtist, preparedCountry, preparedGenre);
                 final ProgressDialog progressDialog = new ProgressDialog(this);
                 progressDialog.setTitle("Uploading...");
                 progressDialog.show();
@@ -311,9 +313,9 @@ public class UploadActivity extends AppCompatActivity {
                 });
             });
         });
-        //                db.collection("Artist").document().set(artistList);
-//                db.collection("Genre").document().set(genreList);
-//                db.collection("Country").document().set(countryList);
+//        db.collection("Artist").document().set(artistList);
+//        db.collection("Genre").document().set(genreList);
+//        db.collection("Country").document().set(countryList);
 //        ContributorModel contributorModel = new ContributorModel(songTitle, auth.getUid(), auth.getCurrentUser().getEmail());
 //        db.collection("Contributor").document().set(contributorModel);
     }

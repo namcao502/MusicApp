@@ -57,8 +57,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         holder.textView.setSelected(true);
 
         holder.itemView.setOnClickListener(view -> {
+            //send data to ListSongActivity
             Intent intent = new Intent(context, ListSongActivity.class);
-            intent.putExtra(Variables.PLAYLIST_OBJECT, (Serializable) list.get(position).getSong());
+            intent.putExtra("LIST_SONG_ID", (Serializable) list.get(position).getSong_id());
             intent.putExtra(Variables.PLAYLIST_ID, list.get(position).getId());
             intent.putExtra(Variables.PLAYLIST_TITLE, list.get(position).getTitle());
             intent.putExtra(Variables.INTENT_TYPE, "playlistIntent");

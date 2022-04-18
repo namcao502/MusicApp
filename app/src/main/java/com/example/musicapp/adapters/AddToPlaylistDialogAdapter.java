@@ -37,18 +37,19 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AddToPlaylistDialogAdapter extends RecyclerView.Adapter<AddToPlaylistDialogAdapter.ViewHolder> {
 
     Context context;
     List<PlaylistModel> list;
-    String songTitle = "";
+    String songId = "";
     String playlistTitle = "";
 
-    public AddToPlaylistDialogAdapter(Context context, List<PlaylistModel> list, String songTitle) {
+    public AddToPlaylistDialogAdapter(Context context, List<PlaylistModel> list, String songId) {
         this.context = context;
         this.list = list;
-        this.songTitle = songTitle;
+        this.songId = songId;
     }
 
     @NonNull
@@ -62,33 +63,30 @@ public class AddToPlaylistDialogAdapter extends RecyclerView.Adapter<AddToPlayli
 
         holder.textView.setText(list.get(position).getTitle());
         holder.textView.setSelected(true);
-        //Log.i("TAG1", "onBindViewHolder: " + list.get(position).getTitle());
         holder.itemView.setOnClickListener(view -> {
 
-            //get all song already in playlist
-            final List<String>[] songTitleFirst = new List[]{new ArrayList<>()};
+            //get all song in that playlist
+            final List<String>[] songIdFirst = new List[]{new ArrayList<>()};
+
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             FirebaseAuth auth = FirebaseAuth.getInstance();
+
             DocumentReference documentReference = db.collection("Playlist")
                     .document(auth.getCurrentUser().getUid()).collection("User").document(list.get(position).getId());
+
             documentReference.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.get("song") != null){
+                if (documentSnapshot.get("song_id") != null){
                     PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);
-                    songTitleFirst[0] = playlistModel.getSong();
+                    assert playlistModel != null;
+                    songIdFirst[0] = playlistModel.getSong_id();
                     playlistTitle = playlistModel.getTitle();
-                    //add this row song to that list
-                    List<String> songTitleList = new ArrayList<>();
-                    if (songTitleFirst[0] != null){
-                        for (String x : songTitleFirst[0]){
-                            songTitleList.add(x);
-                        }
-                    }
 
-                    songTitleList.add(songTitle);
+                    songIdFirst[0].add(songId);
 
-                    db.collection("Playlist").document(auth.getUid()).collection("User").document(list.get(position).getId())
-                            .update("song", songTitleList).addOnCompleteListener(task ->
-                                Toast.makeText(context, "Thêm " + songTitle + " vào " + playlistTitle +  " thành công", Toast.LENGTH_SHORT).show())
+                    db.collection("Playlist").document(Objects.requireNonNull(auth.getUid())).collection("User")
+                            .document(list.get(position).getId())
+                            .update("song_id", songIdFirst[0]).addOnCompleteListener(task ->
+                                Toast.makeText(context, "Thêm vào " + playlistTitle +  " thành công", Toast.LENGTH_SHORT).show())
                             .addOnFailureListener(e ->
                                     Toast.makeText(context, "Thêm thất bại", Toast.LENGTH_SHORT).show());
 

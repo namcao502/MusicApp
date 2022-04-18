@@ -105,6 +105,7 @@ public class HomeFragment extends Fragment {
         progressDialog.show();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void LoadAllGenre() {
         //setup data for genre
         recyclerViewGenre.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
@@ -125,6 +126,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void LoadAllArtist() {
         //setup data for artist
         recyclerViewArtist.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
@@ -143,6 +145,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void LoadAllCountry() {
         //setup data for country
         recyclerViewCountry.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
