@@ -293,6 +293,7 @@ public class UploadActivity extends AppCompatActivity {
 
         StorageReference imageRef = storageReference.child("Song Images/"+ songTitle);
         StorageReference songRef = storageReference.child("Songs/"+ songTitle);
+
         songRef.getDownloadUrl().addOnCompleteListener(task -> {
             audioUrl = task.getResult().toString();
             imageRef.getDownloadUrl().addOnCompleteListener(task1 -> {

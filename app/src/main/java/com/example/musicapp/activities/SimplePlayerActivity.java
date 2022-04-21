@@ -2,6 +2,8 @@ package com.example.musicapp.activities;
 
 import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DownloadManager;
@@ -18,6 +20,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -51,15 +55,20 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SimplePlayerActivity extends AppCompatActivity {
 
     TextView textViewStart, textViewEnd, textViewTitle, textViewArtist;
-    ImageView imageView, imageViewPlay, imageViewPrevious, imageViewNext, imageViewDownload, imageViewAddToPlaylist;
+    ImageView imageViewPlay, imageViewPrevious, imageViewNext, imageViewDownload, imageViewAddToPlaylist, imageViewShuffleAndLoop;
     SeekBar seekBar, seekBarVolume;
     RecyclerView recyclerViewComment;
     EditText editTextComment;
     Button buttonAddComment;
+    CircleImageView circleImageView;
 
     List<SongModel> songModelList;
     int songPosition = 0;
@@ -74,12 +83,15 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
     NotificationManager notificationManager;
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        mediaPlayer.pause();
-//        imageViewPlay.setImageResource(R.drawable.icons8_play_64);
-//    }
+    String playState = "Go";
+
+    ObjectAnimator rotatingImageAnimation;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mediaPlayer.stop();
+    }
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -112,6 +124,10 @@ public class SimplePlayerActivity extends AppCompatActivity {
         UpdateProgress();
         CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
                 R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+
+        if (rotatingImageAnimation.isPaused()){
+            rotatingImageAnimation.resume();
+        }
     }
 
     private void Pause(){
@@ -121,6 +137,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
         UpdateProgress();
         CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
                 R.drawable.ic_play_arrow_black_24dp, songPosition, songModelList.size() - 1);
+
+        rotatingImageAnimation.pause();
     }
 
     private void Previous() {
@@ -128,6 +146,15 @@ public class SimplePlayerActivity extends AppCompatActivity {
         int maxLength = songModelList.size();
         if (songPosition < 0){
             songPosition = maxLength - 1;
+        }
+        if (playState.equals("Shuffle")){
+            CreateRandomTrackPosition();
+        }
+        else {
+            if (playState.equals("Loop")){
+                songPosition += 1;
+                mediaPlayer.reset();
+            }
         }
         if (mediaPlayer.isPlaying()){
             mediaPlayer.stop();
@@ -158,6 +185,15 @@ public class SimplePlayerActivity extends AppCompatActivity {
         int maxLength = songModelList.size();
         if (songPosition > maxLength - 1){
             songPosition = 0;
+        }
+        if (playState.equals("Shuffle")){
+            CreateRandomTrackPosition();
+        }
+        else {
+            if (playState.equals("Loop")){
+                songPosition -= 1;
+                mediaPlayer.reset();
+            }
         }
         if (mediaPlayer.isPlaying()){
             mediaPlayer.stop();
@@ -225,6 +261,25 @@ public class SimplePlayerActivity extends AppCompatActivity {
     @SuppressLint("NotifyDataSetChanged")
     private void Listener() {
 
+        imageViewShuffleAndLoop.setOnClickListener(view -> {
+            if (playState.equals("Loop")) {
+                playState = "Shuffle";
+                imageViewShuffleAndLoop.setImageResource(R.drawable.icons8_shuffle_64);
+            }
+            else {
+                if (playState.equals("Shuffle")){
+                    playState = "Go";
+                    imageViewShuffleAndLoop.setImageResource(R.drawable.icons8_arrow_64);
+                }
+                else {
+                    if (playState.equals("Go")){
+                        playState = "Loop";
+                        imageViewShuffleAndLoop.setImageResource(R.drawable.icons8_repeat_64);
+                    }
+                }
+            }
+        });
+
         buttonAddComment.setOnClickListener(view -> {
             String detail = editTextComment.getText().toString();
             if (detail.isEmpty()){
@@ -232,8 +287,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
                 return;
             }
             else {
-                CommentModel commentModel = new CommentModel(auth.getUid(), songModelList.get(songPosition).getTitle(), detail, auth.getCurrentUser().getEmail());
-                db.collection("Comment").document(auth.getUid()).collection("User").document().set(commentModel)
+                CommentModel commentModel = new CommentModel(auth.getUid(), songModelList.get(songPosition).getId(), detail, auth.getCurrentUser().getEmail());
+                db.collection("Comment").document(Objects.requireNonNull(auth.getUid())).collection("User").document().set(commentModel)
                         .addOnCompleteListener(task -> {
                             Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thành công", Toast.LENGTH_SHORT).show();
 
@@ -241,7 +296,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
                             editTextComment.clearFocus();
 
                             db.collection("Comment").document(auth.getUid()).collection("User")
-                                    .whereEqualTo("song_title", songModelList.get(songPosition).getTitle())
+                                    .whereEqualTo("song_id", songModelList.get(songPosition).getId())
                                     .get().addOnCompleteListener(task2 -> {
                                 if (task.isSuccessful()){
                                     for (QueryDocumentSnapshot doc : task2.getResult()){
@@ -439,7 +494,17 @@ public class SimplePlayerActivity extends AppCompatActivity {
                 if (currentPosition == mediaPlayer.getDuration()){
                     if (mediaPlayer.isPlaying()){
                         mediaPlayer.stop();
-                        mediaPlayer.release();
+                        if (playState.equals("Shuffle")){
+                            CreateRandomTrackPosition();
+                        }
+                        else {
+                            if (playState.equals("Loop")){
+                                mediaPlayer.reset();
+                            }
+                            else {
+                                songPosition++;
+                            }
+                        }
                         try {
                             CreateMediaPlayer();
                         } catch (IOException e) {
@@ -482,11 +547,13 @@ public class SimplePlayerActivity extends AppCompatActivity {
         seekBarVolume = findViewById(R.id.seekBarVolume);
 
         imageViewPlay = findViewById(R.id.imageViewPlay);
-        imageView = findViewById(R.id.imageViewPlayer);
+//        imageView = findViewById(R.id.imageViewPlayer);
         imageViewNext = findViewById(R.id.imageViewNext);
         imageViewPrevious = findViewById(R.id.imageViewPrevious);
         imageViewDownload = findViewById(R.id.imageViewDownload);
         imageViewAddToPlaylist = findViewById(R.id.imageViewAddToPlaylist);
+        imageViewShuffleAndLoop = findViewById(R.id.imageViewShuffleAndLoop);
+        circleImageView = findViewById(R.id.imageViewPlayer);
 
         recyclerViewComment = findViewById(R.id.recyclerView_comment);
 
@@ -494,13 +561,17 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
         buttonAddComment = findViewById(R.id.buttonAddComment);
 
+        rotatingImageAnimation = ObjectAnimator.ofFloat(circleImageView, "rotation", 0, 360);
+        rotatingImageAnimation.setDuration(10000);
+        rotatingImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
+        rotatingImageAnimation.setRepeatMode(ObjectAnimator.RESTART);
+
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        //get comment data from db
         recyclerViewComment.setLayoutManager(new LinearLayoutManager(SimplePlayerActivity.this));
         commentModelList = new ArrayList<>();
         commentAdapter = new CommentAdapter(this, commentModelList);
@@ -508,14 +579,16 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void CreateMediaPlayer() throws IOException {
 
         commentModelList.clear();
         editTextComment.setText("");
         editTextComment.clearFocus();
 
+        //load comment
         db.collection("Comment").document(auth.getUid()).collection("User")
-                .whereEqualTo("song_title", songModelList.get(songPosition).getTitle())
+                .whereEqualTo("song_id", songModelList.get(songPosition).getId())
                 .get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()){
                         for (QueryDocumentSnapshot doc : task.getResult()){
@@ -526,7 +599,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
                     }
                 });
 
-        Glide.with(getApplicationContext()).load(songModelList.get(songPosition).getImg_url()).into(imageView);
+        Glide.with(getApplicationContext()).load(songModelList.get(songPosition).getImg_url()).into(circleImageView);
         textViewTitle.setText(songModelList.get(songPosition).getTitle());
         int artistListLength = songModelList.get(songPosition).getArtist().size();
 
@@ -553,6 +626,35 @@ public class SimplePlayerActivity extends AppCompatActivity {
         imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
         CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
                 R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+
+        mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+            if (playState.equals("Loop"))
+                mediaPlayer.reset();
+            else {
+                if (playState.equals("Shuffle")){
+                    CreateRandomTrackPosition();
+                    try {
+                        CreateMediaPlayer();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    if (playState.equals("Go")){
+                        Next();
+                    }
+                }
+            }
+        });
+
+        rotatingImageAnimation.start();
+    }
+
+    private void CreateRandomTrackPosition() {
+        int limit = songModelList.size();
+        Random random = new Random();
+        int randomNumber = random.nextInt(limit);
+        songPosition = randomNumber;
     }
 
 

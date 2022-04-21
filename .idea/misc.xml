@@ -3,10 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/drawable/circle_bg.xml" value="0.183" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/drawable/edittext_bg.xml" value="0.183" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_list_song.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_list_song_add_new_song_dialog.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_list_song_add_new_song_dialog_item.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_list_song_item.xml" value="0.25" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_simple_player.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_simple_player_add_to_playlist_dialog_item.xml" value="0.25" />
@@ -16,6 +19,7 @@
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/fragment_playlist.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/fragment_playlist_add_new_list_dialog.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/fragment_playlist_item.xml" value="0.25" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/fragment_user.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/menu/list_song_menu.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/menu/navigation.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/menu/playlist_menu.xml" value="0.25" />
