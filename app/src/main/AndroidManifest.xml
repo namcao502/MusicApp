@@ -15,10 +15,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicApp">
         <activity
+            android:name=".activities.CountryCRUDActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.GenreCRUDActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.SongCRUDActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
+        <activity
+            android:name=".activities.ArtistCRUDActivity"
+            android:exported="true" />
         <activity
             android:name=".activities.SongUploadActivity"
             android:exported="false" />
@@ -42,7 +49,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".activities.MainActivity"

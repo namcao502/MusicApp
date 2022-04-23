@@ -1,12 +1,25 @@
 package com.example.musicapp.models;
 
 public class GenreModel {
+    String id;
     String name;
     String img_url;
+
+
+    public GenreModel(String id, String name, String img_url) {
+        this.id = id;
+        this.name = name;
+        this.img_url = img_url;
+    }
 
     public GenreModel(String name, String img_url) {
         this.name = name;
         this.img_url = img_url;
+    }
+
+    @Override
+    public String toString() {
+        return id + ", " + name;
     }
 
     public GenreModel() {
@@ -26,5 +39,13 @@ public class GenreModel {
 
     public void setImg_url(String img_url) {
         this.img_url = img_url;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

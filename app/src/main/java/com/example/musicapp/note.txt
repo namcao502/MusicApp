@@ -24,3 +24,5 @@
 
 //thêm chức năng quản lí user
 - Thêm chức năng up ảnh cho user
+
+//upload ở upload, các crud activities

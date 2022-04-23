@@ -36,6 +36,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     Context context;
     List<SongModel> songModelList;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public SongAdapter(Context context, List<SongModel> songModelList) {
         this.context = context;

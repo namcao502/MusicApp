@@ -3,8 +3,16 @@ package com.example.musicapp.models;
 import java.io.Serializable;
 
 public class ArtistModel implements Serializable {
+
+    String id;
     String name;
     String img_url;
+
+    public ArtistModel(String id, String name, String img_url) {
+        this.id = id;
+        this.name = name;
+        this.img_url = img_url;
+    }
 
     public ArtistModel(String name, String img_url) {
         this.name = name;
@@ -13,13 +21,18 @@ public class ArtistModel implements Serializable {
 
     @Override
     public String toString() {
-        return "ArtistModel{" +
-                "name='" + name + '\'' +
-                ", img_url='" + img_url + '\'' +
-                '}';
+        return id + ", " + name;
     }
 
     public ArtistModel() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {

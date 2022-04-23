@@ -5,6 +5,9 @@
       <map>
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/drawable/circle_bg.xml" value="0.183" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/drawable/edittext_bg.xml" value="0.183" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_artist_crud.xml" value="0.25" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_country_crud.xml" value="0.25" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_genre_crud.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_list_song.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_list_song_add_new_song_dialog.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_list_song_add_new_song_dialog_item.xml" value="0.25" />

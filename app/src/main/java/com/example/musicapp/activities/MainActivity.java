@@ -1,6 +1,10 @@
 package com.example.musicapp.activities;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 
 import com.example.musicapp.fragments.AllSongFragment;
 import com.example.musicapp.fragments.FindFragment;
@@ -14,8 +18,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.musicapp.R;
 
-public class MainActivity extends AppCompatActivity {
+import java.io.IOException;
 
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,4 +59,5 @@ public class MainActivity extends AppCompatActivity {
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
     }
+
 }
