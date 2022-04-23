@@ -1,6 +1,7 @@
 package com.example.musicapp.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -31,11 +32,13 @@ public class ListSongDialogAdapter extends RecyclerView.Adapter<ListSongDialogAd
     Context context;
     List<SongModel> songModelList;
     Intent intent;
+    Dialog dialog;
 
-    public ListSongDialogAdapter(Context context, List<SongModel> songModelList, Intent intent) {
+    public ListSongDialogAdapter(Context context, List<SongModel> songModelList, Intent intent, Dialog dialog) {
         this.context = context;
         this.songModelList = songModelList;
         this.intent = intent;
+        this.dialog = dialog;
     }
 
     @NonNull
@@ -74,7 +77,6 @@ public class ListSongDialogAdapter extends RecyclerView.Adapter<ListSongDialogAd
             String playlistID = intent.getStringExtra(Variables.PLAYLIST_ID);
             String playlistTitle = intent.getStringExtra(Variables.PLAYLIST_TITLE);
 
-//                Log.i("TAG1", "onClick: " + playlistID + "  ---   " + playlistTitle);
             //get all song already in playlist
             final List<String>[] songIdFirst = new List[]{new ArrayList<>()};
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -105,9 +107,11 @@ public class ListSongDialogAdapter extends RecyclerView.Adapter<ListSongDialogAd
                     playlistModel.setId(playlistID);
                     db.collection("Playlist").document(auth.getUid())
                             .collection("User").document(playlistID).set(playlistModel)
-                            .addOnCompleteListener(task ->
-                                    Toast.makeText(context, "Thêm " + songModelList.get(position).getTitle() + " thành công", Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e ->
+                            .addOnCompleteListener(task ->{
+                                Toast.makeText(context, "Thêm " + songModelList.get(position).getTitle() + " thành công", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                                this.notifyDataSetChanged();
+                            }).addOnFailureListener(e ->
                                     Toast.makeText(context, "Thêm thất bại", Toast.LENGTH_SHORT).show());
 
                 }

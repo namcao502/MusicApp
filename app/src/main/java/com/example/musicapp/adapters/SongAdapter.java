@@ -1,6 +1,7 @@
 package com.example.musicapp.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -18,9 +20,16 @@ import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
 import com.example.musicapp.Variables;
 import com.example.musicapp.activities.SimplePlayerActivity;
+import com.example.musicapp.models.PlaylistModel;
 import com.example.musicapp.models.SongModel;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
@@ -69,6 +78,36 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             intent.putExtra(Variables.LIST_SONG_MODEL_OBJECT, (Serializable) songModelList);
             intent.putExtra(Variables.POSITION, position);
             context.startActivity(intent);
+        });
+
+        holder.itemView.setOnLongClickListener(view -> {
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getRootView().getContext());
+            alertDialog.setIcon(R.drawable.icons8_delete_dialog_96);
+            alertDialog.setTitle("Có chắc muốn xoá chứ?");
+            alertDialog.setCancelable(false);
+
+            alertDialog.setPositiveButton("Xoá", (dialogInterface, i) -> {
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+
+                if (auth.getUid().equals("O7HVMDHhSufpDKV2RSApjAJMcFn2")){
+                    db.collection("Song").document(songModelList.get(position).getId()).delete()
+                            .addOnSuccessListener(unused ->
+                                    Toast.makeText(context, "Xoá thành công", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(context, "Xoá thất bại", Toast.LENGTH_SHORT).show());
+                }
+                else {
+                    Toast.makeText(context, "Bạn không có quyền xoá", Toast.LENGTH_SHORT).show();
+                }
+            });
+            alertDialog.setNegativeButton("Không xoá nữa", (dialogInterface, i) -> {
+
+            });
+            alertDialog.show();
+            return false;
         });
     }
 

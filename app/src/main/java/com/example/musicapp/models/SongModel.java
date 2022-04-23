@@ -93,14 +93,6 @@ public class SongModel implements Serializable {
 
     @Override
     public String toString() {
-        return "SongModel{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", url='" + url + '\'' +
-                ", img_url='" + img_url + '\'' +
-                ", artist=" + artist +
-                ", country=" + country +
-                ", genre=" + genre +
-                '}';
+        return id + ", " + title;
     }
 }

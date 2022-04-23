@@ -1,0 +1,26 @@
+//phần upload bị lỗi gì đấy --> Sửa luật(rules)
+
+//thêm phần sửa thông tin bài hát cho admin(tạo activity để chỉnh sửa)
+- khi click vào listview thì hiện thông tin lên edittext và imageview
+- khi ấn vào imageview thì up ảnh từ local lên imageview
+
+- lấy id của bài hát hiện tại
+- lấy các thông tin từ edittext và imageview
+- upload lên firebase
+
+----> Đợi mạng mạnh rồi test -> đã ổn
+
+//thêm phần xoá thông tin bài hát cho admin --> Xong
+
+//thêm tính năng phát ngẫu nhiên và lặp lại --> Xong
+
+//thêm xoay tròn cho ảnh của nhạc khi phát ---> Xong
+
+//thêm danh sách nhạc kế bên hoặc ở dưới để thuận tiện nghe
+
+//thêm phần đăng xuất ở userfragment ---> Xong
+
+//thêm chức năng thêm/sửa/xoá cho nghệ sĩ, bình luận, thể loại,...
+
+//thêm chức năng quản lí user
+- Thêm chức năng up ảnh cho user

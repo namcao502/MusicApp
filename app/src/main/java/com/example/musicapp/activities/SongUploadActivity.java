@@ -1,6 +1,5 @@
 package com.example.musicapp.activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
@@ -9,24 +8,16 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.musicapp.R;
-import com.example.musicapp.adapters.SongAdapter;
 import com.example.musicapp.models.ArtistModel;
-import com.example.musicapp.models.ContributorModel;
 import com.example.musicapp.models.CountryModel;
 import com.example.musicapp.models.GenreModel;
 import com.example.musicapp.models.SongModel;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,16 +26,13 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
-public class UploadActivity extends AppCompatActivity {
+public class SongUploadActivity extends AppCompatActivity {
 
     FirebaseStorage storage;
     StorageReference storageReference;
@@ -70,12 +58,6 @@ public class UploadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_upload);
 
         ViewBinding();
-
-        //test
-//        editTextSongTitleUpload.setText("The Spectre");
-//        editTextGenreUpload.setText("EDM");
-//        editTextArtistUpload.setText("Alan Walker");
-//        editTextCountryUpload.setText("US-UK");
 
         Listener();
 
@@ -166,11 +148,11 @@ public class UploadActivity extends AppCompatActivity {
                         ref.getDownloadUrl().addOnCompleteListener(task -> {
                             audioUrl = task.getResult().toString();
                         });
-                        Toast.makeText(UploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SongUploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {
                         progressDialog.dismiss();
-                        Toast.makeText(UploadActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SongUploadActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -201,20 +183,17 @@ public class UploadActivity extends AppCompatActivity {
                         ref.getDownloadUrl().addOnCompleteListener(task -> {
                            imageUrl = task.getResult().toString();
                         });
-                        Toast.makeText(UploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SongUploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {
                         progressDialog.dismiss();
-                        Toast.makeText(UploadActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SongUploadActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
                     })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
-                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
-                        }
-            });
+                    .addOnProgressListener(taskSnapshot -> {
+                        double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                .getTotalByteCount());
+                        progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                    });
         }
         else {
             Toast.makeText(getApplicationContext(), "Vui lòng chọn lại ảnh", Toast.LENGTH_SHORT).show();

@@ -158,7 +158,7 @@ public class ListSongActivity extends AppCompatActivity {
 
                 recyclerViewAddNewSongDialog.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                 List<SongModel> songModelListTemp = new ArrayList<>();
-                ListSongDialogAdapter listSongDialogAdapter = new ListSongDialogAdapter(getApplicationContext(), songModelListTemp, intent);
+                ListSongDialogAdapter listSongDialogAdapter = new ListSongDialogAdapter(getApplicationContext(), songModelListTemp, intent, dialog);
                 recyclerViewAddNewSongDialog.setAdapter(listSongDialogAdapter);
 
                 //load all song in db for picking

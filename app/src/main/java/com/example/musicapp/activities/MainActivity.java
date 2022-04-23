@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_search:
                     loadFragment(new FindFragment());
                     return true;
-                case R.id.navigation_upload:
+                case R.id.navigation_user:
                     loadFragment(new UserFragment());
                     return true;
             }

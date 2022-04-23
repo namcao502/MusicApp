@@ -11,8 +11,12 @@
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_list_song_item.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_register.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_simple_player.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_simple_player_add_to_playlist_dialog_item.xml" value="0.25" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_song_crud.xml" value="0.25" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_song_update.xml" value="0.25" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_upload.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/fragment_all_song.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/fragment_all_song_song_item.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/fragment_home.xml" value="0.25" />

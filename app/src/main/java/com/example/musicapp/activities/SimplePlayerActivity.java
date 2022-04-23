@@ -42,12 +42,18 @@ import com.example.musicapp.adapters.CommentAdapter;
 import com.example.musicapp.models.CommentModel;
 import com.example.musicapp.models.PlaylistModel;
 import com.example.musicapp.models.SongModel;
+import com.example.musicapp.models.UserModel;
 import com.example.musicapp.services.CreateNotification;
 import com.example.musicapp.services.OnClearFromRecentService;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -87,11 +93,12 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
     ObjectAnimator rotatingImageAnimation;
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mediaPlayer.stop();
-    }
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        mediaPlayer.stop();
+//        unregisterReceiver(broadcastReceiver);
+//    }
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -258,6 +265,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         }
     }
 
+
     @SuppressLint("NotifyDataSetChanged")
     private void Listener() {
 
@@ -287,7 +295,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
                 return;
             }
             else {
-                CommentModel commentModel = new CommentModel(auth.getUid(), songModelList.get(songPosition).getId(), detail, auth.getCurrentUser().getEmail());
+                CommentModel commentModel = new CommentModel(auth.getUid(), songModelList.get(songPosition).getId(), detail);
                 db.collection("Comment").document(Objects.requireNonNull(auth.getUid())).collection("User").document().set(commentModel)
                         .addOnCompleteListener(task -> {
                             Toast.makeText(SimplePlayerActivity.this, "Thêm bình luận thành công", Toast.LENGTH_SHORT).show();
@@ -657,12 +665,11 @@ public class SimplePlayerActivity extends AppCompatActivity {
         songPosition = randomNumber;
     }
 
-
-    protected void onDestroy() {
-        super.onDestroy();
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-//            notificationManager.cancelAll();
-//        }
-        unregisterReceiver(broadcastReceiver);
-    }
+//    protected void onDestroy() {
+//        super.onDestroy();
+////        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+////            notificationManager.cancelAll();
+////        }
+//        unregisterReceiver(broadcastReceiver);
+//    }
 }
