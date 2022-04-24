@@ -1,4 +1,4 @@
-package com.example.musicapp.activities;
+package com.example.musicapp.activities.crud;
 
 import androidx.appcompat.app.AppCompatActivity;
 

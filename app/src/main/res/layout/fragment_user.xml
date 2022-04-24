@@ -1,26 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
     tools:context=".fragments.UserFragment">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:src="@drawable/icons8_user_64"
-            android:id="@+id/circleImageViewUserFragment"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="28dp"
-            app:layout_constraintEnd_toStartOf="@+id/textViewEmail"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/buttonSongCRUD"
@@ -28,15 +18,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="32dp"
+            android:layout_marginEnd="4dp"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:text="Quản lí bài hát"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonArtistCRUD" />
+            app:layout_constraintStart_toEndOf="@+id/buttonArtistCRUD"
+            app:layout_constraintTop_toBottomOf="@+id/buttonGenreCRUD" />
 
         <Button
             android:id="@+id/buttonLogout"
@@ -44,8 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Đăng xuất"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintEnd_toStartOf="@+id/buttonChangePassword"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/buttonContribute" />
 
@@ -58,19 +47,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.538"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/circleImageViewUserFragment" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewEmail" />
 
         <TextView
             android:id="@+id/textViewEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="56dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="64dp"
             android:text="Xin chào, "
             android:textSize="25sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/circleImageViewUserFragment"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
@@ -79,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Quản lí nghệ sĩ"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/buttonSongCRUD"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/buttonGenreCRUD" />
 
@@ -90,7 +79,7 @@
             android:layout_marginTop="32dp"
             android:text="Quản lí quốc gia"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/buttonGenreCRUD"
             app:layout_constraintTop_toBottomOf="@+id/buttonLogout" />
 
         <Button
@@ -99,11 +88,31 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Quản lí thể loại"
+            app:layout_constraintEnd_toStartOf="@+id/buttonCountryCRUD"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonLogout" />
+
+        <Button
+            android:text="Quản lí người dùng"
+            android:id="@+id/buttonUserCRUD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonCountryCRUD" />
+            app:layout_constraintTop_toBottomOf="@+id/buttonSongCRUD" />
+
+        <Button
+            android:id="@+id/buttonChangePassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Đổi mật khẩu"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.644"
+            app:layout_constraintStart_toEndOf="@+id/buttonLogout"
+            app:layout_constraintTop_toBottomOf="@+id/buttonContribute" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-</FrameLayout>
+</androidx.core.widget.NestedScrollView>

@@ -1,14 +1,13 @@
 package com.example.musicapp.fragments;
 
-import android.app.ProgressDialog;
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,29 +17,38 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
-import com.example.musicapp.activities.ArtistCRUDActivity;
-import com.example.musicapp.activities.CountryCRUDActivity;
-import com.example.musicapp.activities.GenreCRUDActivity;
+import com.example.musicapp.activities.ResetPasswordActivity;
+import com.example.musicapp.activities.crud.ArtistCRUDActivity;
+import com.example.musicapp.activities.crud.CountryCRUDActivity;
+import com.example.musicapp.activities.crud.GenreCRUDActivity;
 import com.example.musicapp.activities.LoginActivity;
-import com.example.musicapp.activities.SongCRUDActivity;
-import com.example.musicapp.activities.SongUploadActivity;
+import com.example.musicapp.activities.crud.SongCRUDActivity;
+import com.example.musicapp.activities.crud.SongUploadActivity;
+import com.example.musicapp.activities.crud.UserCRUDActivity;
 import com.example.musicapp.models.UserModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserFragment extends Fragment {
 
-    Button buttonContribute, buttonLogout, buttonSongCRUD, buttonArtistCRUD, buttonCountryCRUD, buttonGenreCRUD;
+    Button buttonContribute, buttonLogout, buttonSongCRUD, buttonArtistCRUD, buttonCountryCRUD, buttonGenreCRUD, buttonUserCRUD, buttonChangePassword;
     TextView textViewEmail;
-    CircleImageView circleImageView;
     FirebaseAuth auth;
     FirebaseFirestore db;
+    List<UserModel> userModelList;
 
     public UserFragment() {
         // Required empty public constructor
@@ -54,7 +62,7 @@ public class UserFragment extends Fragment {
 
         ViewBinding(view);
 
-        LoadUserNameAndImage();
+        LoadUserName();
 
         Listener();
 
@@ -63,6 +71,14 @@ public class UserFragment extends Fragment {
 
 
     private void Listener() {
+
+        buttonChangePassword.setOnClickListener(view -> {
+            startActivity(new Intent(getContext(), ResetPasswordActivity.class));
+        });
+
+        buttonUserCRUD.setOnClickListener(view -> {
+            startActivity(new Intent(getContext(), UserCRUDActivity.class));
+        });
 
         buttonGenreCRUD.setOnClickListener(view -> {
             startActivity(new Intent(getContext(), GenreCRUDActivity.class));
@@ -84,14 +100,14 @@ public class UserFragment extends Fragment {
         buttonSongCRUD.setOnClickListener(view -> startActivity(new Intent(getContext(), SongCRUDActivity.class)));
     }
 
-    private void LoadUserNameAndImage() {
+    @SuppressLint("SetTextI18n")
+    private void LoadUserName() {
         db.collection("User").whereEqualTo("id", auth.getCurrentUser().getUid()).get()
                 .addOnCompleteListener(task -> {
             if (task.isSuccessful()){
                 for (QueryDocumentSnapshot doc : task.getResult()){
                     UserModel userModel = doc.toObject(UserModel.class);
                     textViewEmail.setText("Xin chào, " + userModel.getName());
-                    Glide.with(UserFragment.this).load(userModel.getImg_url()).into(circleImageView);
                 }
             }
         });
@@ -109,8 +125,40 @@ public class UserFragment extends Fragment {
         buttonArtistCRUD = view.findViewById(R.id.buttonArtistCRUD);
         buttonCountryCRUD = view.findViewById(R.id.buttonCountryCRUD);
         buttonGenreCRUD = view.findViewById(R.id.buttonGenreCRUD);
+        buttonUserCRUD = view.findViewById(R.id.buttonUserCRUD);
+        buttonChangePassword = view.findViewById(R.id.buttonChangePassword);
 
-        circleImageView = view.findViewById(R.id.circleImageViewUserFragment);
+        userModelList = new ArrayList<>();
+
+        SetVisibility(false);
+
+        db.collection("User").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                for (QueryDocumentSnapshot doc : task.getResult()){
+                    UserModel userModel = doc.toObject(UserModel.class);
+                    if (userModel.getId().equals(auth.getCurrentUser().getUid()) && userModel.getRole().equals("admin")){
+                        SetVisibility(true);
+                    }
+                }
+            }
+        });
+    }
+
+    private void SetVisibility(boolean x){
+        if (x){
+            buttonUserCRUD.setVisibility(View.VISIBLE);
+            buttonSongCRUD.setVisibility(View.VISIBLE);
+            buttonArtistCRUD.setVisibility(View.VISIBLE);
+            buttonCountryCRUD.setVisibility(View.VISIBLE);
+            buttonGenreCRUD.setVisibility(View.VISIBLE);
+        }
+        else {
+            buttonUserCRUD.setVisibility(View.GONE);
+            buttonSongCRUD.setVisibility(View.GONE);
+            buttonArtistCRUD.setVisibility(View.GONE);
+            buttonCountryCRUD.setVisibility(View.GONE);
+            buttonGenreCRUD.setVisibility(View.GONE);
+        }
     }
 
 }

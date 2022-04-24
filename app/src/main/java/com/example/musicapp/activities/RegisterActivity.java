@@ -50,19 +50,6 @@ public class RegisterActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-//        CommentModel commentModel = new CommentModel(auth.getUid(), "Unity", "Hay đấy");
-//
-//        String userEmail = auth.getCurrentUser().getEmail();
-//        commentModel.setUser_email(userEmail);
-//
-//        db.collection("Comment").document(auth.getUid()).collection("User")
-//                .document().set(commentModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Void> task) {
-//                Toast.makeText(RegisterActivity.this, "Đã thêm bình luận!", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-
     }
     private void listener(){
         buttonSignUp.setOnClickListener(view -> {
@@ -88,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()){
                             Toast.makeText(RegisterActivity.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                            UserModel userModel = new UserModel(auth.getCurrentUser().getUid(), "", name);
+                            UserModel userModel = new UserModel(auth.getCurrentUser().getUid(), "user", name, email, password);
                             db.collection("User").document().set(userModel).addOnCompleteListener(task1 -> {
                                 Toast.makeText(RegisterActivity.this, "Đã thêm người dùng!", Toast.LENGTH_SHORT).show();
                             });

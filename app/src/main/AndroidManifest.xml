@@ -2,11 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.musicapp">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,19 +10,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicApp">
         <activity
-            android:name=".activities.CountryCRUDActivity"
+            android:name=".activities.ResetPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.GenreCRUDActivity"
+            android:name=".activities.crud.UserCRUDActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.SongCRUDActivity"
+            android:name=".activities.crud.CountryCRUDActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.crud.GenreCRUDActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.crud.SongCRUDActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.ArtistCRUDActivity"
+            android:name=".activities.crud.ArtistCRUDActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.SongUploadActivity"
+            android:name=".activities.crud.SongUploadActivity"
             android:exported="false" />
         <activity
             android:name=".activities.ListSongActivity"

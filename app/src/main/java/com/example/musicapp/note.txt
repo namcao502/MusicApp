@@ -1,4 +1,4 @@
-//phần upload bị lỗi gì đấy --> Sửa luật(rules)
+//phần upload bị lỗi gì đấy --> do k đồng bộ luồng của img và file audio nên nó null trước khi up do đó xảy ra lỗi
 
 //thêm phần sửa thông tin bài hát cho admin(tạo activity để chỉnh sửa)
 - khi click vào listview thì hiện thông tin lên edittext và imageview
@@ -20,9 +20,9 @@
 
 //thêm phần đăng xuất ở userfragment ---> Xong
 
-//thêm chức năng thêm/sửa/xoá cho nghệ sĩ, bình luận, thể loại,...
+//thêm chức năng thêm/sửa/xoá cho nghệ sĩ, bình luận, thể loại,... ---> Xong
 
 //thêm chức năng quản lí user
-- Thêm chức năng up ảnh cho user
-
-//upload ở upload, các crud activities
+- quên mật khẩu ở login activity
+- thêm sửa xoá user ở bảng user và firebase authentication
+- đổi mật khẩu

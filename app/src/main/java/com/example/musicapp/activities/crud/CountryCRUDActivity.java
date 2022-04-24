@@ -1,4 +1,4 @@
-package com.example.musicapp.activities;
+package com.example.musicapp.activities.crud;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,8 +17,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
-import com.example.musicapp.models.ArtistModel;
-import com.example.musicapp.models.GenreModel;
+import com.example.musicapp.models.CountryModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,10 +29,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenreCRUDActivity extends AppCompatActivity {
+public class CountryCRUDActivity extends AppCompatActivity {
 
-    EditText editTextGenreNameCRUD;
-    ImageView imageViewGenreCRUDImage;
+    EditText editTextCountryNameCRUD;
+    ImageView imageViewCountryCRUDImage;
     Button buttonAdd, buttonUpdate, buttonRemove;
     ListView listView;
 
@@ -43,7 +42,7 @@ public class GenreCRUDActivity extends AppCompatActivity {
     StorageReference storageReference;
 
     ArrayAdapter arrayAdapter;
-    List<GenreModel> genreModelList;
+    List<CountryModel> countryModelList;
 
     private Uri ImageFilePath;
 
@@ -56,11 +55,11 @@ public class GenreCRUDActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_genre_crud);
+        setContentView(R.layout.activity_country_crud);
 
         ViewBinding();
 
-        LoadAllArtist();
+        LoadAllCountry();
 
         Listener();
     }
@@ -79,7 +78,7 @@ public class GenreCRUDActivity extends AppCompatActivity {
             ImageFilePath = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), ImageFilePath);
-                imageViewGenreCRUDImage.setImageBitmap(bitmap);
+                imageViewCountryCRUDImage.setImageBitmap(bitmap);
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -89,24 +88,24 @@ public class GenreCRUDActivity extends AppCompatActivity {
     }
 
     private void UploadImageFileToFirestore(){
-        String artistName = editTextGenreNameCRUD.getText().toString();
+        String countryName = editTextCountryNameCRUD.getText().toString();
         if(ImageFilePath != null) {
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
 
-            StorageReference ref = storageReference.child("Genre Images/"+ artistName);
+            StorageReference ref = storageReference.child("Country Images/"+ countryName);
             ref.putFile(ImageFilePath)
                     .addOnSuccessListener(taskSnapshot -> {
                         progressDialog.dismiss();
                         ref.getDownloadUrl().addOnCompleteListener(task -> {
                             imageUrl = task.getResult().toString();
                         });
-                        Toast.makeText(GenreCRUDActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CountryCRUDActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {
                         progressDialog.dismiss();
-                        Toast.makeText(GenreCRUDActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CountryCRUDActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
                     })
                     .addOnProgressListener(taskSnapshot -> {
                         double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
@@ -121,19 +120,19 @@ public class GenreCRUDActivity extends AppCompatActivity {
 
     private void UploadArtistToFirebase() {
 
-        String genreName = editTextGenreNameCRUD.getText().toString();
+        String countryName = editTextCountryNameCRUD.getText().toString();
 
-        if (genreName.isEmpty()){
-            Toast.makeText(getApplicationContext(), "Vui lòng nhập tên thể loại", Toast.LENGTH_SHORT).show();
+        if (countryName.isEmpty()){
+            Toast.makeText(getApplicationContext(), "Vui lòng nhập tên quốc gia", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (currentPosition == -1){
-            Toast.makeText(getApplicationContext(), "Vui lòng chọn thể loại", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Vui lòng chọn quốc gia", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        StorageReference imageRef = storageReference.child("Genre Images/" + genreName);
+        StorageReference imageRef = storageReference.child("Country Images/" + countryName);
 
         imageRef.getDownloadUrl().addOnCompleteListener(task -> {
 
@@ -143,78 +142,78 @@ public class GenreCRUDActivity extends AppCompatActivity {
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
 
-            DocumentReference doc = db.collection("Genre").document();
-            doc.set(new GenreModel(doc.getId(), genreName, imageUrl)).addOnCompleteListener(task2 -> {
+            DocumentReference doc = db.collection("Country").document();
+            doc.set(new CountryModel(doc.getId(), countryName, imageUrl)).addOnCompleteListener(task2 -> {
                 progressDialog.dismiss();
-                Toast.makeText(getApplicationContext(), "Thêm thể loại thành công", Toast.LENGTH_SHORT).show();
-                LoadAllArtist();
+                Toast.makeText(getApplicationContext(), "Thêm quốc gia thành công", Toast.LENGTH_SHORT).show();
+                LoadAllCountry();
             }).addOnFailureListener(e -> {
-                Toast.makeText(getApplicationContext(), "Thêm thể lại thất bại thất bại", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Thêm quốc gia thất bại", Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
-                LoadAllArtist();
+                LoadAllCountry();
             });
         });
     }
 
     private void Reset(){
-        editTextGenreNameCRUD.setText("");
-        imageViewGenreCRUDImage.setImageResource(R.drawable.icons8_user_64);
+        editTextCountryNameCRUD.setText("");
+        imageViewCountryCRUDImage.setImageResource(R.drawable.icons8_user_64);
     }
 
     private void Listener() {
 
-        imageViewGenreCRUDImage.setOnClickListener(view -> {
+        imageViewCountryCRUDImage.setOnClickListener(view -> {
             LoadImageFromStorage();
         });
 
         buttonAdd.setOnClickListener(view -> {
             UploadArtistToFirebase();
-            LoadAllArtist();
+            LoadAllCountry();
             Reset();
         });
 
         buttonRemove.setOnClickListener(view -> {
-            String genreId = genreModelList.get(currentPosition).getId();
-            db.collection("Genre").document(genreId).delete().addOnSuccessListener(unused -> {
-                Toast.makeText(getApplicationContext(), "Xoá thể loại thành công", Toast.LENGTH_SHORT).show();
-                LoadAllArtist();
+            String countryId = countryModelList.get(currentPosition).getId();
+            db.collection("Country").document(countryId).delete().addOnSuccessListener(unused -> {
+                Toast.makeText(getApplicationContext(), "Xoá quốc gia thành công", Toast.LENGTH_SHORT).show();
+                LoadAllCountry();
             }).addOnFailureListener(e -> {
-                Toast.makeText(getApplicationContext(), "Xoá thể loại thất bại", Toast.LENGTH_SHORT).show();
-                LoadAllArtist();
+                Toast.makeText(getApplicationContext(), "Xoá quốc gia thất bại", Toast.LENGTH_SHORT).show();
+                LoadAllCountry();
             });
             Reset();
         });
 
         buttonUpdate.setOnClickListener(view -> {
-            UpdateArtist(genreModelList.get(currentPosition).getId());
-            LoadAllArtist();
+            UpdateCountry(countryModelList.get(currentPosition).getId());
+            LoadAllCountry();
             Reset();
         });
 
 
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
 
-            editTextGenreNameCRUD.setText(genreModelList.get(i).getName());
+            editTextCountryNameCRUD.setText(countryModelList.get(i).getName());
 
-            Glide.with(GenreCRUDActivity.this).load(genreModelList.get(i).getImg_url()).into(imageViewGenreCRUDImage);
+            Glide.with(CountryCRUDActivity.this).load(countryModelList.get(i).getImg_url()).into(imageViewCountryCRUDImage);
 
             currentPosition = i;
         });
     }
 
-    private void UpdateArtist(String artistId){
-        String genreName = editTextGenreNameCRUD.getText().toString();
-        db.collection("Genre").document(artistId).update("name", genreName, "img_url", imageUrl)
-                .addOnCompleteListener(task -> Toast.makeText(getApplicationContext(), "Cập nhật thể loại thành công", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Cập nhật thể loại thất bại", Toast.LENGTH_SHORT).show());
+    private void UpdateCountry(String artistId){
+        String countryName = editTextCountryNameCRUD.getText().toString();
+        db.collection("Country").document(artistId).update("name", countryName, "img_url", imageUrl)
+                .addOnCompleteListener(task -> Toast.makeText(getApplicationContext(), "Cập nhật quốc gia thành công", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Cập nhật quốc gia thất bại", Toast.LENGTH_SHORT).show());
     }
-    private void LoadAllArtist() {
-        genreModelList.clear();
-        db.collection("Genre").get().addOnCompleteListener(task -> {
+    private void LoadAllCountry() {
+        countryModelList.clear();
+        db.collection("Country").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot doc : task.getResult()) {
-                    GenreModel genreModel = doc.toObject(GenreModel.class);
-                    genreModelList.add(genreModel);
+                    CountryModel countryModel = doc.toObject(CountryModel.class);
+                    countryModelList.add(countryModel);
                 }
                 arrayAdapter.notifyDataSetChanged();
             }
@@ -223,23 +222,23 @@ public class GenreCRUDActivity extends AppCompatActivity {
 
     private void ViewBinding() {
 
-        editTextGenreNameCRUD = findViewById(R.id.editTextGenreNameCRUD);
+        editTextCountryNameCRUD = findViewById(R.id.editTextCountryNameCRUD);
 
-        imageViewGenreCRUDImage = findViewById(R.id.imageViewGenreCRUDImage);
+        imageViewCountryCRUDImage = findViewById(R.id.imageViewCountryCRUDImage);
 
-        buttonAdd = findViewById(R.id.buttonAddGenreCRUD);
-        buttonRemove = findViewById(R.id.buttonRemoveGenreCRUD);
-        buttonUpdate = findViewById(R.id.buttonUpdateGenreCRUD);
+        buttonAdd = findViewById(R.id.buttonAddCountryCRUD);
+        buttonRemove = findViewById(R.id.buttonRemoveCountryCRUD);
+        buttonUpdate = findViewById(R.id.buttonUpdateCountryCRUD);
 
-        listView = findViewById(R.id.listViewGenreCRUD);
+        listView = findViewById(R.id.listViewCountryCRUD);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
-        genreModelList = new ArrayList<>();
-        arrayAdapter = new ArrayAdapter(GenreCRUDActivity.this, android.R.layout.simple_list_item_1, genreModelList);
+        countryModelList = new ArrayList<>();
+        arrayAdapter = new ArrayAdapter(CountryCRUDActivity.this, android.R.layout.simple_list_item_1, countryModelList);
         listView.setAdapter(arrayAdapter);
     }
 }
