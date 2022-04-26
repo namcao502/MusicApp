@@ -39,6 +39,7 @@ import com.example.musicapp.R;
 import com.example.musicapp.Variables;
 import com.example.musicapp.adapters.AddToPlaylistDialogAdapter;
 import com.example.musicapp.adapters.CommentAdapter;
+import com.example.musicapp.models.ArtistModel;
 import com.example.musicapp.models.CommentModel;
 import com.example.musicapp.models.PlaylistModel;
 import com.example.musicapp.models.SongModel;
@@ -50,6 +51,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -611,17 +613,19 @@ public class SimplePlayerActivity extends AppCompatActivity {
         textViewTitle.setText(songModelList.get(songPosition).getTitle());
         int artistListLength = songModelList.get(songPosition).getArtist().size();
 
-        String artistText = "";
-        for (int i=0; i<artistListLength; i++){
-            if (i == artistListLength - 1){
-                artistText += songModelList.get(songPosition).getArtist().get(i);
-            }
-            else {
-                artistText += songModelList.get(songPosition).getArtist().get(i) + ", ";
-            }
-        }
+        final String[] artistText = {""};
+        artistText[0] = "";
 
-        textViewArtist.setText(artistText);
+        for (int i=0; i<artistListLength; i++){
+            FirebaseFirestore.getInstance().collection("Artist").document(songModelList.get(songPosition).getArtist().get(i))
+                    .get().addOnCompleteListener(task -> {
+                DocumentSnapshot doc = task.getResult();
+                ArtistModel artistModel = doc.toObject(ArtistModel.class);
+                artistText[0] += artistModel.getName() + ", ";
+                textViewArtist.setText(artistText[0]+ "");
+
+            });
+        }
 
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setDataSource(songModelList.get(songPosition).getUrl());
