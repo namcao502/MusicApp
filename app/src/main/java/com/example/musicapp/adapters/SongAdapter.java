@@ -20,12 +20,16 @@ import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
 import com.example.musicapp.Variables;
 import com.example.musicapp.activities.SimplePlayerActivity;
+import com.example.musicapp.models.ArtistModel;
 import com.example.musicapp.models.PlaylistModel;
 import com.example.musicapp.models.SongModel;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
@@ -36,7 +40,6 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     Context context;
     List<SongModel> songModelList;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public SongAdapter(Context context, List<SongModel> songModelList) {
         this.context = context;
@@ -58,21 +61,19 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
         int artistListLength = songModelList.get(position).getArtist().size();
 
-        String artistText = "";
+        final String[] artistText = {""};
+        artistText[0] = "";
 
         for (int i=0; i<artistListLength; i++){
-            if (i == artistListLength - 1){
-                artistText += songModelList.get(position).getArtist().get(i);
-            }
-            else {
-                artistText += songModelList.get(position).getArtist().get(i) + ", ";
-            }
-        }
-        if (artistText.isEmpty())
-            holder.textViewArtist.setText("Không có nghệ sĩ");
+            FirebaseFirestore.getInstance().collection("Artist").document(songModelList.get(position).getArtist().get(i))
+                    .get().addOnCompleteListener(task -> {
+                DocumentSnapshot doc = task.getResult();
+                ArtistModel artistModel = doc.toObject(ArtistModel.class);
+                artistText[0] += artistModel.getName() + ", ";
+                holder.textViewArtist.setText(artistText[0]+ "");
 
-        else
-            holder.textViewArtist.setText(artistText);
+            });
+        }
 
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(context, SimplePlayerActivity.class);
@@ -93,7 +94,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 FirebaseAuth auth = FirebaseAuth.getInstance();
 
-                if (auth.getUid().equals("O7HVMDHhSufpDKV2RSApjAJMcFn2")){
+                if (auth.getUid().equals(Variables.ADMIN_ID)){
                     db.collection("Song").document(songModelList.get(position).getId()).delete()
                             .addOnSuccessListener(unused ->
                                     Toast.makeText(context, "Xoá thành công", Toast.LENGTH_SHORT).show())

@@ -14,6 +14,8 @@ public class Variables {
     public final static String GENRE_TITLE = "genreTitle";
     public final static String COUNTRY_TITLE = "countryTitle";
 
+    public final static String ADMIN_ID = "O7HVMDHhSufpDKV2RSApjAJMcFn2";
+
 
 
 }

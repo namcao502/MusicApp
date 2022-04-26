@@ -47,7 +47,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ViewHolder
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(context, ListSongActivity.class);
             intent.putExtra(Variables.INTENT_TYPE, "artistIntent");
-            intent.putExtra(Variables.ARTIST_TITLE, list.get(position).getName());
+            intent.putExtra(Variables.ARTIST_TITLE, list.get(position).getId());
             context.startActivity(intent);
         });
 

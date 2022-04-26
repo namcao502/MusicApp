@@ -44,7 +44,7 @@ public class CountryAdapter extends RecyclerView.Adapter<CountryAdapter.ViewHold
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(context, ListSongActivity.class);
             intent.putExtra(Variables.INTENT_TYPE, "countryIntent");
-            intent.putExtra(Variables.COUNTRY_TITLE, list.get(position).getName());
+            intent.putExtra(Variables.COUNTRY_TITLE, list.get(position).getId());
             context.startActivity(intent);
         });
     }
