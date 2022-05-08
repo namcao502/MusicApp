@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicApp">
         <activity
-            android:name=".activities.ResetPasswordActivity"
+            android:name=".activities.crud.ResetPasswordActivity"
             android:exported="false" />
         <activity
             android:name=".activities.crud.UserCRUDActivity"
@@ -40,7 +40,7 @@
             android:name=".activities.FirstTimeActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.RegisterActivity"
+            android:name=".activities.crud.RegisterActivity"
             android:exported="false" />
         <activity
             android:name=".activities.LoginActivity"

@@ -20,16 +20,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,19 +44,12 @@ import com.example.musicapp.models.ArtistModel;
 import com.example.musicapp.models.CommentModel;
 import com.example.musicapp.models.PlaylistModel;
 import com.example.musicapp.models.SongModel;
-import com.example.musicapp.models.UserModel;
 import com.example.musicapp.services.CreateNotification;
 import com.example.musicapp.services.OnClearFromRecentService;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -77,6 +71,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
     EditText editTextComment;
     Button buttonAddComment;
     CircleImageView circleImageView;
+    ListView listViewListSong;
 
     List<SongModel> songModelList;
     int songPosition = 0;
@@ -89,187 +84,28 @@ public class SimplePlayerActivity extends AppCompatActivity {
     List<CommentModel> commentModelList;
     CommentAdapter commentAdapter;
 
+
     NotificationManager notificationManager;
 
     String playState = "Go";
 
     ObjectAnimator rotatingImageAnimation;
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        mediaPlayer.stop();
-//        unregisterReceiver(broadcastReceiver);
-//    }
-
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getExtras().getString("actionName");
-
-            switch (action){
-                case CreateNotification.ACTION_PREVIOUS:
-                    Previous();
-                    break;
-                case CreateNotification.ACTION_PLAY:
-                    if (mediaPlayer.isPlaying()){
-                        Pause();
-                    }
-                    else {
-                        Play();
-                    }
-                    break;
-                case CreateNotification.ACTION_NEXT:
-                    Next();
-                    break;
-            }
-        }
-    };
-
-    private void Play(){
-        mediaPlayer.start();
-        imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
-        SetTime();
-        UpdateProgress();
-        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
-
-        if (rotatingImageAnimation.isPaused()){
-            rotatingImageAnimation.resume();
-        }
-    }
-
-    private void Pause(){
-        mediaPlayer.pause();
-        imageViewPlay.setImageResource(R.drawable.icons8_play_64);
-        SetTime();
-        UpdateProgress();
-        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_play_arrow_black_24dp, songPosition, songModelList.size() - 1);
-
-        rotatingImageAnimation.pause();
-    }
-
-    private void Previous() {
-        songPosition -= 1;
-        int maxLength = songModelList.size();
-        if (songPosition < 0){
-            songPosition = maxLength - 1;
-        }
-        if (playState.equals("Shuffle")){
-            CreateRandomTrackPosition();
-        }
-        else {
-            if (playState.equals("Loop")){
-                songPosition += 1;
-                mediaPlayer.reset();
-            }
-        }
-        if (mediaPlayer.isPlaying()){
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            try {
-                CreateMediaPlayer();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mediaPlayer.start();
-            imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
-        }
-        else {
-            try {
-                CreateMediaPlayer();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        SetTime();
-        UpdateProgress();
-        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
-    }
-
-    private void Next() {
-        songPosition += 1;
-        int maxLength = songModelList.size();
-        if (songPosition > maxLength - 1){
-            songPosition = 0;
-        }
-        if (playState.equals("Shuffle")){
-            CreateRandomTrackPosition();
-        }
-        else {
-            if (playState.equals("Loop")){
-                songPosition -= 1;
-                mediaPlayer.reset();
-            }
-        }
-        if (mediaPlayer.isPlaying()){
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            try {
-                CreateMediaPlayer();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mediaPlayer.start();
-            imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
-        }
-        else {
-            try {
-                CreateMediaPlayer();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        SetTime();
-        UpdateProgress();
-        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_simple_player);
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
-        Intent intent = getIntent();
-        songModelList = (List<SongModel>) intent.getSerializableExtra(Variables.LIST_SONG_MODEL_OBJECT);
-        songPosition = intent.getIntExtra(Variables.POSITION, 0);
-
-        ViewBinding();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            CreateChannel();
-            registerReceiver(broadcastReceiver, new IntentFilter("TRACKS_TRACKS"));
-            startService(new Intent(getBaseContext(), OnClearFromRecentService.class));
-        }
-        
-        try {
-            CreateMediaPlayer();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        SetTime();
-        UpdateProgress();
-        Listener();
-    }
-
-    private void CreateChannel() {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel channel = new NotificationChannel(CreateNotification.CHANNEL_ID, "MusicPlayer", NotificationManager.IMPORTANCE_HIGH);
-            notificationManager = getSystemService(NotificationManager.class);
-            if (notificationManager != null){
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-    }
-
 
     @SuppressLint("NotifyDataSetChanged")
     private void Listener() {
+
+        listViewListSong.setOnItemClickListener((adapterView, view, i, l) -> {
+            songPosition = i;
+            if (mediaPlayer.isPlaying()){
+                mediaPlayer.stop();
+            }
+            try {
+                CreateMediaPlayer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         imageViewShuffleAndLoop.setOnClickListener(view -> {
             if (playState.equals("Loop")) {
@@ -566,6 +402,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         circleImageView = findViewById(R.id.imageViewPlayer);
 
         recyclerViewComment = findViewById(R.id.recyclerView_comment);
+        listViewListSong = findViewById(R.id.listView_list_song);
 
         editTextComment = findViewById(R.id.editTextComment);
 
@@ -586,6 +423,18 @@ public class SimplePlayerActivity extends AppCompatActivity {
         commentModelList = new ArrayList<>();
         commentAdapter = new CommentAdapter(this, commentModelList);
         recyclerViewComment.setAdapter(commentAdapter);
+
+        List<String> listSong = new ArrayList<>();
+        if (songModelList != null){
+            for (SongModel x : songModelList){
+               listSong.add(x.getTitle());
+            }
+        }
+
+        if (listSong != null){
+            ArrayAdapter arrayAdapter = new ArrayAdapter(SimplePlayerActivity.this, android.R.layout.simple_list_item_1, listSong);
+            listViewListSong.setAdapter(arrayAdapter);
+        }
 
     }
 
@@ -668,6 +517,180 @@ public class SimplePlayerActivity extends AppCompatActivity {
         int randomNumber = random.nextInt(limit);
         songPosition = randomNumber;
     }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mediaPlayer.stop();
+        unregisterReceiver(broadcastReceiver);
+    }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getExtras().getString("actionName");
+
+            switch (action){
+                case CreateNotification.ACTION_PREVIOUS:
+                    Previous();
+                    break;
+                case CreateNotification.ACTION_PLAY:
+                    if (mediaPlayer.isPlaying()){
+                        Pause();
+                    }
+                    else {
+                        Play();
+                    }
+                    break;
+                case CreateNotification.ACTION_NEXT:
+                    Next();
+                    break;
+            }
+        }
+    };
+
+    private void Play(){
+        mediaPlayer.start();
+        imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+        SetTime();
+        UpdateProgress();
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+
+        if (rotatingImageAnimation.isPaused()){
+            rotatingImageAnimation.resume();
+        }
+    }
+
+    private void Pause(){
+        mediaPlayer.pause();
+        imageViewPlay.setImageResource(R.drawable.icons8_play_64);
+        SetTime();
+        UpdateProgress();
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_play_arrow_black_24dp, songPosition, songModelList.size() - 1);
+
+        rotatingImageAnimation.pause();
+    }
+
+    private void Previous() {
+        songPosition -= 1;
+        int maxLength = songModelList.size();
+        if (songPosition < 0){
+            songPosition = maxLength - 1;
+        }
+        if (playState.equals("Shuffle")){
+            CreateRandomTrackPosition();
+        }
+        else {
+            if (playState.equals("Loop")){
+                songPosition += 1;
+                mediaPlayer.reset();
+            }
+        }
+        if (mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            try {
+                CreateMediaPlayer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mediaPlayer.start();
+            imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+        }
+        else {
+            try {
+                CreateMediaPlayer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        SetTime();
+        UpdateProgress();
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+    }
+
+    private void Next() {
+        songPosition += 1;
+        int maxLength = songModelList.size();
+        if (songPosition > maxLength - 1){
+            songPosition = 0;
+        }
+        if (playState.equals("Shuffle")){
+            CreateRandomTrackPosition();
+        }
+        else {
+            if (playState.equals("Loop")){
+                songPosition -= 1;
+                mediaPlayer.reset();
+            }
+        }
+        if (mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            try {
+                CreateMediaPlayer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mediaPlayer.start();
+            imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
+        }
+        else {
+            try {
+                CreateMediaPlayer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        SetTime();
+        UpdateProgress();
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_simple_player);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        Intent intent = getIntent();
+        songModelList = (List<SongModel>) intent.getSerializableExtra(Variables.LIST_SONG_MODEL_OBJECT);
+        songPosition = intent.getIntExtra(Variables.POSITION, 0);
+
+        ViewBinding();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CreateChannel();
+            registerReceiver(broadcastReceiver, new IntentFilter("TRACKS_TRACKS"));
+            startService(new Intent(getBaseContext(), OnClearFromRecentService.class));
+        }
+
+        try {
+            CreateMediaPlayer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        SetTime();
+        UpdateProgress();
+        Listener();
+    }
+
+    private void CreateChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(CreateNotification.CHANNEL_ID, "MusicPlayer", NotificationManager.IMPORTANCE_HIGH);
+            notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null){
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+    }
+
 
 //    protected void onDestroy() {
 //        super.onDestroy();

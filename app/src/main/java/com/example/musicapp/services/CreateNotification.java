@@ -104,7 +104,7 @@ public class CreateNotification {
             notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.icons8_musical_notes_96)
                     .setContentTitle(songModel.getTitle())
-                    .setContentText(artistText)
+                    .setContentText(artistText)//
                     .setLargeIcon(bitmap[0])
                     .setOnlyAlertOnce(true)//show notification for only first time
                     .setShowWhen(false)
