@@ -58,6 +58,7 @@ public class FirstTimeSliderAdapter extends PagerAdapter {
         View view = layoutInflater.inflate(R.layout.activity_first_time_slider_item, container, false);
 
         ImageView image = view.findViewById(R.id.slider_img);
+        image.setScaleType(ImageView.ScaleType.CENTER_CROP);
         TextView heading = view.findViewById(R.id.heading);
         TextView description = view.findViewById(R.id.description);
 

@@ -8,7 +8,6 @@
     android:padding="20dp"
     tools:context=".activities.FirstTimeActivity">
 
-
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/slider"
         android:layout_width="match_parent"

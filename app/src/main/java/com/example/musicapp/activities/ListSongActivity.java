@@ -180,7 +180,7 @@ public class ListSongActivity extends AppCompatActivity {
                     final List<String>[] songIdFirst = new List[]{new ArrayList<>()};
 
                     DocumentReference documentReference = db.collection("Playlist")
-                            .document(auth.getCurrentUser().getUid()).collection("User").document(playlistID);
+                            .document(Objects.requireNonNull(auth.getCurrentUser()).getUid()).collection("User").document(playlistID);
                     documentReference.get().addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.get("song_id") != null) {
                             PlaylistModel playlistModel = documentSnapshot.toObject(PlaylistModel.class);

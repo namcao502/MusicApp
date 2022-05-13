@@ -13,7 +13,10 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.musicapp.R;
+import com.example.musicapp.models.ArtistModel;
 import com.example.musicapp.models.SongModel;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,22 +48,23 @@ public class CreateNotification {
         }
     }
 
-    public static void CreateNotification(Context context, SongModel songModel, int playAndPauseButton, int position, int size){
+    public static void CreateNotification(Context context, SongModel songModel, int playAndPauseButton, int position, int size, Bitmap bitmap){
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
             MediaSessionCompat mediaSessionCompat = new MediaSessionCompat( context, "tag");
 
-            final Bitmap[] bitmap = {null};
-            Thread thread = new Thread(() -> {
-                try  {
-                    bitmap[0] = getBitmapFromURL(songModel.getImg_url());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-            thread.start();
+//            final Bitmap[] bitmap = {null};
+//            Thread thread = new Thread(() -> {
+//                try  {
+//                    bitmap[0] = getBitmapFromURL(songModel.getImg_url());
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//            thread.start();
+
 
             PendingIntent pendingIntentPrevious;
             int drw_previous;
@@ -87,36 +91,39 @@ public class CreateNotification {
                 drw_next = R.drawable.ic_skip_next_black_24dp;
             }
 
-
-            String artistText = "";
             int artistListLength = songModel.getArtist().size();
 
+            final String[] artistText = {""};
+            artistText[0] = "";
+
             for (int i=0; i<artistListLength; i++){
-                if (i == artistListLength - 1){
-                    artistText += songModel.getArtist().get(i);
-                }
-                else {
-                    artistText += songModel.getArtist().get(i) + ", ";
-                }
+                FirebaseFirestore.getInstance().collection("Artist").document(songModel.getArtist().get(i))
+                        .get().addOnCompleteListener(task -> {
+                    DocumentSnapshot doc = task.getResult();
+                    ArtistModel artistModel = doc.toObject(ArtistModel.class);
+                    artistText[0] += artistModel.getName() + ", ";
+//                    Bitmap bitmap = getBitmapFromURL(imgUrl);
+
+                    notification = new NotificationCompat.Builder(context, CHANNEL_ID)
+                            .setSmallIcon(R.drawable.icons8_musical_notes_96)
+                            .setContentTitle(songModel.getTitle())
+                            .setContentText(artistText[0])//
+                            .setLargeIcon(bitmap)
+                            .setOnlyAlertOnce(true)//show notification for only first time
+                            .setShowWhen(false)
+                            .addAction(drw_previous, "Previous", pendingIntentPrevious)
+                            .addAction(playAndPauseButton, "Play", pendingIntentPlay)
+                            .addAction(drw_next, "Next", pendingIntentNext)
+                            .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                                    .setShowActionsInCompactView(0, 1, 2)
+                                    .setMediaSession(mediaSessionCompat.getSessionToken()))
+                            .setPriority(NotificationCompat.PRIORITY_LOW)
+                            .build();
+                    notificationManagerCompat.notify(1, notification);
+                });
             }
 
-            //create notification
-            notification = new NotificationCompat.Builder(context, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.icons8_musical_notes_96)
-                    .setContentTitle(songModel.getTitle())
-                    .setContentText(artistText)//
-                    .setLargeIcon(bitmap[0])
-                    .setOnlyAlertOnce(true)//show notification for only first time
-                    .setShowWhen(false)
-                    .addAction(drw_previous, "Previous", pendingIntentPrevious)
-                    .addAction(playAndPauseButton, "Play", pendingIntentPlay)
-                    .addAction(drw_next, "Next", pendingIntentNext)
-                    .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                            .setShowActionsInCompactView(0, 1, 2)
-                            .setMediaSession(mediaSessionCompat.getSessionToken()))
-                    .setPriority(NotificationCompat.PRIORITY_LOW)
-                    .build();
-            notificationManagerCompat.notify(1, notification);
+
         }
     }
 }

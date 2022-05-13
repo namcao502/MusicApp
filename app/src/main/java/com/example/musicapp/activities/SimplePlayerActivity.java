@@ -14,14 +14,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
-import android.widget.AdapterView;
+import android.os.StrictMode;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,11 +33,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.musicapp.R;
 import com.example.musicapp.Variables;
 import com.example.musicapp.adapters.AddToPlaylistDialogAdapter;
@@ -54,11 +60,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -83,7 +93,6 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
     List<CommentModel> commentModelList;
     CommentAdapter commentAdapter;
-
 
     NotificationManager notificationManager;
 
@@ -304,7 +313,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
     private void DowloadMusicFile() {
 
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
-        StorageReference storageReference = firebaseStorage.getReference();;
+        StorageReference storageReference = firebaseStorage.getReference();
         StorageReference reference;
 
         ProgressDialog pd = new ProgressDialog(this);
@@ -315,7 +324,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
         String songTitle = songModelList.get(songPosition).getTitle();
 
-        reference = storageReference.child( "Songs/"+ songTitle + ".mp3");
+        reference = storageReference.child("Songs/"+ songTitle + ".mp3");
 
         reference.getDownloadUrl().addOnSuccessListener(uri -> {
             String url = uri.toString();
@@ -438,6 +447,39 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
     }
 
+    public Bitmap getBitmapFromURL(String imageUrl) {
+        try {
+            URL url = new URL(imageUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream inputStream = connection.getInputStream();
+            Bitmap imageBitmap = BitmapFactory.decodeStream(inputStream);
+            return imageBitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+//        Glide.with(SimplePlayerActivity.this).asBitmap().load(imageUrl)
+//                .into(new CustomTarget<Bitmap>() {
+//            @Override
+//            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//
+//            }
+//
+//            @Override
+//            public void onLoadCleared(@Nullable Drawable placeholder) {
+//
+//            }
+//        });
+//
+//        Bitmap bitmap = Glide.
+//                with(this).
+//                asBitmap().
+//                load(imageUrl).submit().get();
+//        return bitmap;
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private void CreateMediaPlayer() throws IOException {
 
@@ -471,8 +513,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
                 DocumentSnapshot doc = task.getResult();
                 ArtistModel artistModel = doc.toObject(ArtistModel.class);
                 artistText[0] += artistModel.getName() + ", ";
-                textViewArtist.setText(artistText[0]+ "");
-
+                textViewArtist.setText(artistText[0] + "");
             });
         }
 
@@ -486,7 +527,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         mediaPlayer.start();
         imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
         CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()));
 
         mediaPlayer.setOnCompletionListener(mediaPlayer -> {
             if (playState.equals("Loop"))
@@ -555,8 +596,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
         imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
         SetTime();
         UpdateProgress();
-        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+//        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+//                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, songModelList.get(songPosition).getImg_url());
 
         if (rotatingImageAnimation.isPaused()){
             rotatingImageAnimation.resume();
@@ -568,8 +609,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
         imageViewPlay.setImageResource(R.drawable.icons8_play_64);
         SetTime();
         UpdateProgress();
-        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_play_arrow_black_24dp, songPosition, songModelList.size() - 1);
+//        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+//                R.drawable.ic_play_arrow_black_24dp, songPosition, songModelList.size() - 1, songModelList.get(songPosition).getImg_url());
 
         rotatingImageAnimation.pause();
     }
@@ -609,8 +650,9 @@ public class SimplePlayerActivity extends AppCompatActivity {
         }
         SetTime();
         UpdateProgress();
-        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+//        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+//                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, songModelList.get(songPosition).getImg_url());
+//
     }
 
     private void Next() {
@@ -648,13 +690,18 @@ public class SimplePlayerActivity extends AppCompatActivity {
         }
         SetTime();
         UpdateProgress();
-        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1);
+//        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+//                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, songModelList.get(songPosition).getImg_url());
+//
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         setContentView(R.layout.activity_simple_player);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 

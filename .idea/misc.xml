@@ -7,6 +7,7 @@
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/drawable/edittext_bg.xml" value="0.183" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_artist_crud.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_country_crud.xml" value="0.25" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_first_time.xml" value="0.24635416666666668" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_first_time_slider_item.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_forgot_password.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_genre_crud.xml" value="0.25" />
@@ -17,7 +18,7 @@
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_register.xml" value="0.25" />
-        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_simple_player.xml" value="0.25" />
+        <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_simple_player.xml" value="0.23656973878758009" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_simple_player_add_to_playlist_dialog_item.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_song_crud.xml" value="0.25" />
         <entry key="..\:/~project/Android Java/MusicApp/app/src/main/res/layout/activity_song_update.xml" value="0.25" />
