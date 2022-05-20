@@ -570,6 +570,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             String action = intent.getExtras().getString("actionName");
 
             switch (action){
@@ -596,8 +597,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
         imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
         SetTime();
         UpdateProgress();
-//        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-//                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, songModelList.get(songPosition).getImg_url());
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()));
 
         if (rotatingImageAnimation.isPaused()){
             rotatingImageAnimation.resume();
@@ -609,8 +610,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
         imageViewPlay.setImageResource(R.drawable.icons8_play_64);
         SetTime();
         UpdateProgress();
-//        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-//                R.drawable.ic_play_arrow_black_24dp, songPosition, songModelList.size() - 1, songModelList.get(songPosition).getImg_url());
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_play_arrow_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()));
 
         rotatingImageAnimation.pause();
     }
@@ -650,8 +651,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
         }
         SetTime();
         UpdateProgress();
-//        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-//                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, songModelList.get(songPosition).getImg_url());
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()));
 //
     }
 
@@ -690,8 +691,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
         }
         SetTime();
         UpdateProgress();
-//        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-//                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, songModelList.get(songPosition).getImg_url());
+        CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()));
 //
     }
 
@@ -738,12 +739,13 @@ public class SimplePlayerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//            notificationManager.cancelAll();
+//        }
+        unregisterReceiver(broadcastReceiver);
+    }
 
-//    protected void onDestroy() {
-//        super.onDestroy();
-////        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-////            notificationManager.cancelAll();
-////        }
-//        unregisterReceiver(broadcastReceiver);
-//    }
 }

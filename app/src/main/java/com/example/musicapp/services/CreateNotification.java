@@ -26,45 +26,18 @@ import java.net.URL;
 
 public class CreateNotification {
     public static final String CHANNEL_ID = "channel";
-
     public static final String ACTION_PREVIOUS = "actionPrevious";
     public static final String ACTION_PLAY = "actionPlay";
     public static final String ACTION_NEXT = "actionNext";
 
     public static Notification notification;
 
-    public static Bitmap getBitmapFromURL(String imageUrl) {
-        try {
-            URL url = new URL(imageUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream inputStream = connection.getInputStream();
-            Bitmap imageBitmap = BitmapFactory.decodeStream(inputStream);
-            return imageBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public static void CreateNotification(Context context, SongModel songModel, int playAndPauseButton, int position, int size, Bitmap bitmap){
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-            MediaSessionCompat mediaSessionCompat = new MediaSessionCompat( context, "tag");
-
-//            final Bitmap[] bitmap = {null};
-//            Thread thread = new Thread(() -> {
-//                try  {
-//                    bitmap[0] = getBitmapFromURL(songModel.getImg_url());
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            });
-//            thread.start();
-
+            MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(context, "tag");
 
             PendingIntent pendingIntentPrevious;
             int drw_previous;
