@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -152,6 +153,11 @@ public class ListSongActivity extends AppCompatActivity {
             if (item.getItemId() == R.id.playlist_menu_add) {
                 Dialog dialog = new Dialog(ListSongActivity.this);
                 dialog.setContentView(R.layout.activity_list_song_add_new_song_dialog);
+                DisplayMetrics metrics = getResources().getDisplayMetrics();
+                int width = metrics.widthPixels;
+                int height = metrics.heightPixels;
+                dialog.getWindow().setLayout((6 * width)/7, (4 * height)/5);
+                dialog.show();
 
                 RecyclerView recyclerViewAddNewSongDialog = dialog.findViewById(R.id.recyclerView_list_song_dialog);
                 Button buttonAddAll = dialog.findViewById(R.id.buttonAddNewListDialogAddAll);
@@ -205,7 +211,7 @@ public class ListSongActivity extends AppCompatActivity {
 
                 });
 
-                dialog.show();
+//                dialog.show();
             }
             return true;
         });

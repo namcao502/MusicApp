@@ -65,17 +65,11 @@ public class UserCRUDActivity extends AppCompatActivity {
                 Toast.makeText(UserCRUDActivity.this, "Vui lòng nhập mật khẩu", Toast.LENGTH_SHORT).show();
                 return;
             }
-            db.collection("User").document(id).update("name", name).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    Toast.makeText(UserCRUDActivity.this, "Đổi tên thành công", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(UserCRUDActivity.this, "Đổi tên thất bại", Toast.LENGTH_SHORT).show();
-                }
-            });
+            db.collection("User").document(id).update("name", name)
+                    .addOnSuccessListener(unused ->
+                            Toast.makeText(UserCRUDActivity.this, "Đổi tên thành công", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e ->
+                            Toast.makeText(UserCRUDActivity.this, "Đổi tên thất bại", Toast.LENGTH_SHORT).show());
             Reset();
         });
 

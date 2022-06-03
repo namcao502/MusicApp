@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void listener() {
+
         textViewForgotPassword.setOnClickListener(view -> {
 //            startActivity(new Intent(LoginActivity.this, ResetPasswordActivity.class));
             Toast.makeText(LoginActivity.this, "Sẽ ra mắt sau!", Toast.LENGTH_SHORT).show();

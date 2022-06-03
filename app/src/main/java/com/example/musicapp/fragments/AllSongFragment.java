@@ -67,6 +67,7 @@ public class AllSongFragment extends Fragment {
 
     @SuppressLint("NotifyDataSetChanged")
     private void LoadAllSong() {
+
         //setup data for song
         recyclerViewAllSong.setLayoutManager(new LinearLayoutManager(getContext()));
         songModelList = new ArrayList<>();

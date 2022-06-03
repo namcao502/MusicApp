@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.util.DisplayMetrics;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -100,6 +101,8 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
     ObjectAnimator rotatingImageAnimation;
 
+    final String[] artistText = {""};
+
 
     @SuppressLint("NotifyDataSetChanged")
     private void Listener() {
@@ -173,6 +176,11 @@ public class SimplePlayerActivity extends AppCompatActivity {
 
             Dialog dialog = new Dialog(SimplePlayerActivity.this);
             dialog.setContentView(R.layout.activity_simple_player_add_to_playlist_dialog);
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            int width = metrics.widthPixels;
+            int height = metrics.heightPixels;
+            dialog.getWindow().setLayout((6 * width)/7, (4 * height)/5);
+            dialog.show();
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -420,7 +428,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         rotatingImageAnimation = ObjectAnimator.ofFloat(circleImageView, "rotation", 0, 360);
         rotatingImageAnimation.setDuration(10000);
         rotatingImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
-        rotatingImageAnimation.setRepeatMode(ObjectAnimator.RESTART);
+        rotatingImageAnimation.setRepeatMode(ObjectAnimator.REVERSE);
 
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -504,7 +512,6 @@ public class SimplePlayerActivity extends AppCompatActivity {
         textViewTitle.setText(songModelList.get(songPosition).getTitle());
         int artistListLength = songModelList.get(songPosition).getArtist().size();
 
-        final String[] artistText = {""};
         artistText[0] = "";
 
         for (int i=0; i<artistListLength; i++){
@@ -527,7 +534,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         mediaPlayer.start();
         imageViewPlay.setImageResource(R.drawable.icons8_pause_64);
         CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()));
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()), artistText[0]);
 
         mediaPlayer.setOnCompletionListener(mediaPlayer -> {
             if (playState.equals("Loop"))
@@ -598,7 +605,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         SetTime();
         UpdateProgress();
         CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()));
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()), artistText[0]);
 
         if (rotatingImageAnimation.isPaused()){
             rotatingImageAnimation.resume();
@@ -611,7 +618,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         SetTime();
         UpdateProgress();
         CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_play_arrow_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()));
+                R.drawable.ic_play_arrow_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()), artistText[0]);
 
         rotatingImageAnimation.pause();
     }
@@ -652,7 +659,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         SetTime();
         UpdateProgress();
         CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()));
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()), artistText[0]);
 //
     }
 
@@ -692,7 +699,7 @@ public class SimplePlayerActivity extends AppCompatActivity {
         SetTime();
         UpdateProgress();
         CreateNotification.CreateNotification(SimplePlayerActivity.this, songModelList.get(songPosition),
-                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()));
+                R.drawable.ic_pause_black_24dp, songPosition, songModelList.size() - 1, getBitmapFromURL(songModelList.get(songPosition).getImg_url()), artistText[0]);
 //
     }
 
@@ -745,7 +752,13 @@ public class SimplePlayerActivity extends AppCompatActivity {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 //            notificationManager.cancelAll();
 //        }
-        unregisterReceiver(broadcastReceiver);
+//        unregisterReceiver(broadcastReceiver);
+        mediaPlayer.stop();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mediaPlayer.stop();
+    }
 }
