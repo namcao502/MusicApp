@@ -1,0 +1,2 @@
+trong song crud:
+- cho người dùng chọn trong combobox để chọn nghệ sĩ, thể loại, quốc gia

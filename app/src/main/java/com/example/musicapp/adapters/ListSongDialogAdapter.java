@@ -18,10 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
 import com.example.musicapp.Variables;
+import com.example.musicapp.models.ArtistModel;
 import com.example.musicapp.models.PlaylistModel;
 import com.example.musicapp.models.SongModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -56,21 +58,19 @@ public class ListSongDialogAdapter extends RecyclerView.Adapter<ListSongDialogAd
 
         int artistListLength = songModelList.get(position).getArtist().size();
 
-        String artistText = "";
+        final String[] artistText = {""};
+        artistText[0] = "";
 
         for (int i=0; i<artistListLength; i++){
-            if (i == artistListLength - 1){
-                artistText += songModelList.get(position).getArtist().get(i);
-            }
-            else {
-                artistText += songModelList.get(position).getArtist().get(i) + ", ";
-            }
-        }
-        if (artistText.isEmpty())
-            holder.textViewArtist.setText("Không có nghệ sĩ");
+            FirebaseFirestore.getInstance().collection("Artist").document(songModelList.get(position).getArtist().get(i))
+                    .get().addOnCompleteListener(task -> {
+                        DocumentSnapshot doc = task.getResult();
+                        ArtistModel artistModel = doc.toObject(ArtistModel.class);
+                        artistText[0] += artistModel.getName() + ", ";
+                        holder.textViewArtist.setText(artistText[0]);
 
-        else
-            holder.textViewArtist.setText(artistText);
+                    });
+        }
 
         holder.itemView.setOnClickListener(view -> {
 

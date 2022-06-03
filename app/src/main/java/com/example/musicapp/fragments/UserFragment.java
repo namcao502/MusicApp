@@ -115,6 +115,8 @@ public class UserFragment extends Fragment {
         buttonUserCRUD = view.findViewById(R.id.buttonUserCRUD);
         buttonChangePassword = view.findViewById(R.id.buttonChangePassword);
 
+        buttonContribute.setVisibility(View.GONE);
+
         userModelList = new ArrayList<>();
 
         SetVisibility(false);

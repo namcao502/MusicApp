@@ -22,7 +22,6 @@ public class FirstTimeSliderAdapter extends PagerAdapter {
             R.drawable.slide1,
             R.drawable.slide2,
             R.drawable.slide3
-
     };
 
     int headingArray[] = {

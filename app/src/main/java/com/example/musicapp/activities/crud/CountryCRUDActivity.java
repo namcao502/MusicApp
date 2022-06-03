@@ -127,11 +127,6 @@ public class CountryCRUDActivity extends AppCompatActivity {
             return;
         }
 
-        if (currentPosition == -1){
-            Toast.makeText(getApplicationContext(), "Vui lòng chọn quốc gia", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         StorageReference imageRef = storageReference.child("Country Images/" + countryName);
 
         imageRef.getDownloadUrl().addOnCompleteListener(task -> {
@@ -173,21 +168,32 @@ public class CountryCRUDActivity extends AppCompatActivity {
         });
 
         buttonRemove.setOnClickListener(view -> {
-            String countryId = countryModelList.get(currentPosition).getId();
-            db.collection("Country").document(countryId).delete().addOnSuccessListener(unused -> {
-                Toast.makeText(getApplicationContext(), "Xoá quốc gia thành công", Toast.LENGTH_SHORT).show();
-                LoadAllCountry();
-            }).addOnFailureListener(e -> {
-                Toast.makeText(getApplicationContext(), "Xoá quốc gia thất bại", Toast.LENGTH_SHORT).show();
-                LoadAllCountry();
-            });
-            Reset();
+            if (currentPosition != -1){
+                String countryId = countryModelList.get(currentPosition).getId();
+                db.collection("Country").document(countryId).delete().addOnSuccessListener(unused -> {
+                    Toast.makeText(getApplicationContext(), "Xoá quốc gia thành công", Toast.LENGTH_SHORT).show();
+                    LoadAllCountry();
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(getApplicationContext(), "Xoá quốc gia thất bại", Toast.LENGTH_SHORT).show();
+                    LoadAllCountry();
+                });
+                Reset();
+            }
+            else {
+                Toast.makeText(CountryCRUDActivity.this, "Vui lòng chọn", Toast.LENGTH_SHORT).show();
+            }
+
         });
 
         buttonUpdate.setOnClickListener(view -> {
-            UpdateCountry(countryModelList.get(currentPosition).getId());
-            LoadAllCountry();
-            Reset();
+            if (currentPosition != -1){
+                UpdateCountry(countryModelList.get(currentPosition).getId());
+                LoadAllCountry();
+                Reset();
+            }
+            else {
+                Toast.makeText(CountryCRUDActivity.this, "Vui lòng chọn", Toast.LENGTH_SHORT).show();
+            }
         });
 
 

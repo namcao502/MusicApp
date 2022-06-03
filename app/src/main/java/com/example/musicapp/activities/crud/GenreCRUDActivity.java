@@ -122,13 +122,8 @@ public class GenreCRUDActivity extends AppCompatActivity {
 
         String genreName = editTextGenreNameCRUD.getText().toString();
 
-        if (genreName.isEmpty()){
+        if (genreName.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Vui lòng nhập tên thể loại", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (currentPosition == -1){
-            Toast.makeText(getApplicationContext(), "Vui lòng chọn thể loại", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -173,21 +168,31 @@ public class GenreCRUDActivity extends AppCompatActivity {
         });
 
         buttonRemove.setOnClickListener(view -> {
-            String genreId = genreModelList.get(currentPosition).getId();
-            db.collection("Genre").document(genreId).delete().addOnSuccessListener(unused -> {
-                Toast.makeText(getApplicationContext(), "Xoá thể loại thành công", Toast.LENGTH_SHORT).show();
-                LoadAllArtist();
-            }).addOnFailureListener(e -> {
-                Toast.makeText(getApplicationContext(), "Xoá thể loại thất bại", Toast.LENGTH_SHORT).show();
-                LoadAllArtist();
-            });
-            Reset();
+            if (currentPosition != -1){
+                String genreId = genreModelList.get(currentPosition).getId();
+                db.collection("Genre").document(genreId).delete().addOnSuccessListener(unused -> {
+                    Toast.makeText(getApplicationContext(), "Xoá thể loại thành công", Toast.LENGTH_SHORT).show();
+                    LoadAllArtist();
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(getApplicationContext(), "Xoá thể loại thất bại", Toast.LENGTH_SHORT).show();
+                    LoadAllArtist();
+                });
+                Reset();
+            }
+            else {
+                Toast.makeText(GenreCRUDActivity.this, "Vui lòng chọn", Toast.LENGTH_SHORT).show();
+            }
         });
 
         buttonUpdate.setOnClickListener(view -> {
-            UpdateArtist(genreModelList.get(currentPosition).getId());
-            LoadAllArtist();
-            Reset();
+            if (currentPosition != -1){
+                UpdateArtist(genreModelList.get(currentPosition).getId());
+                LoadAllArtist();
+                Reset();
+            }
+            else {
+                Toast.makeText(GenreCRUDActivity.this, "Vui lòng chọn", Toast.LENGTH_SHORT).show();
+            }
         });
 
 

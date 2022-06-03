@@ -131,10 +131,6 @@ public class ArtistCRUDActivity extends AppCompatActivity {
             return;
         }
 
-        if (currentPosition == -1){
-            Toast.makeText(getApplicationContext(), "Vui lòng chọn nghệ sĩ", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         StorageReference imageRef = storageReference.child("Artist Images/" + artistName);
 
@@ -177,21 +173,31 @@ public class ArtistCRUDActivity extends AppCompatActivity {
         });
 
         buttonRemove.setOnClickListener(view -> {
-            String artistId = artistModelList.get(currentPosition).getId();
-            db.collection("Artist").document(artistId).delete().addOnSuccessListener(unused -> {
-                Toast.makeText(getApplicationContext(), "Xoá nghệ sĩ thành công", Toast.LENGTH_SHORT).show();
-                LoadAllArtist();
-            }).addOnFailureListener(e -> {
+            if (currentPosition != -1){
+                String artistId = artistModelList.get(currentPosition).getId();
+                db.collection("Artist").document(artistId).delete().addOnSuccessListener(unused -> {
+                    Toast.makeText(getApplicationContext(), "Xoá nghệ sĩ thành công", Toast.LENGTH_SHORT).show();
+                    LoadAllArtist();
+                }).addOnFailureListener(e -> {
                     Toast.makeText(getApplicationContext(), "Xoá nghệ sĩ thất bại", Toast.LENGTH_SHORT).show();
                     LoadAllArtist();
-            });
-            Reset();
+                });
+                Reset();
+            }
+            else {
+                Toast.makeText(ArtistCRUDActivity.this, "Vui lòng chọn", Toast.LENGTH_SHORT).show();
+            }
         });
 
         buttonUpdate.setOnClickListener(view -> {
-            UpdateArtist(artistModelList.get(currentPosition).getId());
-            LoadAllArtist();
-            Reset();
+            if (currentPosition != -1){
+                UpdateArtist(artistModelList.get(currentPosition).getId());
+                LoadAllArtist();
+                Reset();
+            }
+            else {
+                Toast.makeText(ArtistCRUDActivity.this, "Vui lòng chọn", Toast.LENGTH_SHORT).show();
+            }
         });
 
 

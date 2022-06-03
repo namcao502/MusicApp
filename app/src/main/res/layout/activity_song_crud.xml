@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
@@ -10,6 +11,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <Spinner
+            android:id="@+id/spinnerGenre"
+            android:layout_width="50dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textInputLayout6"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout5" />
+
+        <Spinner
+            android:id="@+id/spinnerCountry"
+            android:layout_width="50dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.507"
+            app:layout_constraintStart_toEndOf="@+id/textInputLayout5"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout4" />
+
         <ImageView
             android:id="@+id/imageViewCRUDFileAudio"
             android:layout_width="120dp"
@@ -18,7 +38,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageViewCRUDImage"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout6"
-            app:srcCompat="@drawable/icons8_user_64" />
+            app:srcCompat="@drawable/icons8_mp3_64" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout3"
@@ -47,12 +67,12 @@
             android:layout_height="64dp"
             android:layout_marginTop="32dp"
             android:hint="Nghệ sĩ (cách nhau bởi dấu ,)"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.424"
+            app:layout_constraintEnd_toStartOf="@+id/spinnerArtist"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout3">
 
             <EditText
+                android:enabled="true"
                 android:id="@+id/editTextArtistCRUD"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -66,12 +86,12 @@
             android:layout_height="64dp"
             android:layout_marginTop="32dp"
             android:hint="Quốc gia (cách nhau bởi dấu ,)"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.424"
+            app:layout_constraintEnd_toStartOf="@+id/spinnerCountry"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout4">
 
             <EditText
+                android:enabled="true"
                 android:id="@+id/editTextCountryCRUD"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -86,12 +106,12 @@
             android:layout_height="64dp"
             android:layout_marginTop="32dp"
             android:hint="Thể loại (cách nhau bởi dấu ,)"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.424"
+            app:layout_constraintEnd_toStartOf="@+id/spinnerGenre"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout5">
 
             <EditText
+                android:enabled="true"
                 android:id="@+id/editTextGenreCRUD"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -128,7 +148,7 @@
             android:layout_marginTop="32dp"
             android:text="Xoá"
             android:textColor="@android:color/white"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/buttonAllSongCRUD"
             app:layout_constraintStart_toEndOf="@+id/buttonUpdateSongCRUD"
             app:layout_constraintTop_toBottomOf="@+id/imageViewCRUDImage" />
 
@@ -140,17 +160,36 @@
             app:layout_constraintEnd_toStartOf="@+id/imageViewCRUDFileAudio"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout6"
-            app:srcCompat="@drawable/icons8_user_64" />
+            app:srcCompat="@drawable/icons8_gallery_64" />
 
         <ListView
             android:id="@+id/listViewSongCRUD"
             android:layout_width="0dp"
-            android:layout_height="500dp"
+            android:layout_height="2000dp"
             android:layout_marginTop="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/buttonAddSongCRUD" />
+
+        <Button
+            android:id="@+id/buttonAllSongCRUD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Tất cả"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/buttonRemoveSongCRUD"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewCRUDImage" />
+
+        <Spinner
+            android:id="@+id/spinnerArtist"
+            android:layout_width="50dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textInputLayout4"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

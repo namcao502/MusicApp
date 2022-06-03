@@ -59,20 +59,23 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
         holder.textViewTitle.setText(songModelList.get(position).getTitle());
 
-        int artistListLength = songModelList.get(position).getArtist().size();
+        if (songModelList.get(position).getArtist() != null){
+            int artistListLength = songModelList.get(position).getArtist().size();
 
-        final String[] artistText = {""};
-        artistText[0] = "";
+            final String[] artistText = {""};
+            artistText[0] = "";
 
-        for (int i=0; i<artistListLength; i++){
-            FirebaseFirestore.getInstance().collection("Artist").document(songModelList.get(position).getArtist().get(i))
-                    .get().addOnCompleteListener(task -> {
-                DocumentSnapshot doc = task.getResult();
-                ArtistModel artistModel = doc.toObject(ArtistModel.class);
-                artistText[0] += artistModel.getName() + ", ";
-                holder.textViewArtist.setText(artistText[0]+ "");
-
-            });
+            for (int i=0; i<artistListLength; i++){
+                FirebaseFirestore.getInstance().collection("Artist").document(songModelList.get(position).getArtist().get(i))
+                        .get().addOnCompleteListener(task -> {
+                            DocumentSnapshot doc = task.getResult();
+                            ArtistModel artistModel = doc.toObject(ArtistModel.class);
+                            if (artistModel != null){
+                                artistText[0] += artistModel.getName() + ", ";
+                                holder.textViewArtist.setText(artistText[0]+ "");
+                            }
+                        });
+            }
         }
 
         holder.itemView.setOnClickListener(view -> {
